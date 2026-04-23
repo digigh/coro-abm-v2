@@ -990,8 +990,8 @@
   color: var(--text);
 }
 
-/* --- VIDEO LOOP TRANSITION --- */
-.video-transition-overlay {
+/* --- GIF TRANSITION OVERLAY --- */
+.gif-transition-overlay {
   position: fixed;
   inset: 0;
   background: #000;
@@ -999,10 +999,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 
-.video-asset {
+.gif-asset {
   width: 100%;
   height: 100%;
   object-fit: cover;

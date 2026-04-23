@@ -7,15 +7,12 @@ import kowloonImg from '../assets/destinations/kowloon.png';
 import oceanParkImg from '../assets/destinations/oceanpark.png';
 import victoriaPeakImg from '../assets/destinations/victoria_peak.png';
 
-const VideoTransition = () => (
-  <div className="video-transition-overlay" key="video-overlay">
-    <video 
-      src="/replace_gif.mp4" 
-      className="video-asset" 
-      autoPlay 
-      muted 
-      loop
-      playsInline 
+const GifTransition = () => (
+  <div className="gif-transition-overlay" key="gif-overlay">
+    <img 
+      src="/stars_anime.gif" 
+      className="gif-asset" 
+      alt="Transitioning..."
     />
   </div>
 );
@@ -36,7 +33,7 @@ const WelcomeScreen = ({ onNext }) => {
   return (
     <div className={`welcome-screen ${isTransitioning ? 'pointer-events-none' : ''}`}>
       <AnimatePresence>
-        {isTransitioning && <VideoTransition />}
+        {isTransitioning && <GifTransition />}
       </AnimatePresence>
 
       <header className="welcome-header">
