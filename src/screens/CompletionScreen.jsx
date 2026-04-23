@@ -31,17 +31,32 @@ function ConfettiPiece({ i }) {
 
 export default function CompletionScreen({ employee, score, timeTaken, onRestart }) {
   const [showConfetti, setShowConfetti] = useState(false);
+  const [redirectTime, setRedirectTime] = useState(10);
   const firstName = employee?.name?.split(' ')[0] ?? 'Explorer';
-  const safeTime = Math.floor((timeTaken || 0) / 1000);
 
   useEffect(() => {
     // Small delay so the entry animation plays first then confetti fires
     const t = setTimeout(() => setShowConfetti(true), 400);
-    return () => clearTimeout(t);
-  }, []);
+    
+    // 10 second auto-redirect
+    const timer = setInterval(() => {
+      setRedirectTime(prev => {
+        if (prev <= 1) {
+          onRestart();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearTimeout(t);
+      clearInterval(timer);
+    };
+  }, [onRestart]);
 
   return (
-    <div className="completion-content">
+    <div className="completion-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', textAlign: 'center' }}>
 
       {/* CSS Confetti */}
       <style>{`
@@ -89,13 +104,21 @@ export default function CompletionScreen({ employee, score, timeTaken, onRestart
         Your answers have been securely recorded. Results and the ultimate champion will be revealed at our grand finale!
       </motion.p>
 
-
-
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
-        style={{ marginTop: 32, fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-head)' }}
+        style={{ marginTop: 48, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
       >
-        You may now safely close this window.
+        <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: 2 }}>
+          Returning to home in {redirectTime}s
+        </div>
+        <div className="auto-progress-bar" style={{ width: 120, height: 2, background: 'rgba(255,255,255,0.1)', borderRadius: 10, overflow: 'hidden' }}>
+          <motion.div 
+            style={{ height: '100%', background: 'var(--gold)' }}
+            initial={{ width: '100%' }}
+            animate={{ width: '0%' }}
+            transition={{ duration: 10, ease: 'linear' }}
+          />
+        </div>
       </motion.div>
     </div>
   );

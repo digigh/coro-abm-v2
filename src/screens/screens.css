@@ -557,14 +557,14 @@
 .quiz-wrap {
   width: 100%;
   max-width: 580px;
-  padding: 24px 0 120px;
+  padding: 24px 16px 120px;
 }
 
 .progress-hud {
   position: sticky;
   top: 0;
   z-index: 20;
-  padding: 16px 0 12px;
+  padding: 16px 8px 12px;
   background: linear-gradient(180deg, var(--bg) 60%, transparent);
 }
 
@@ -618,10 +618,11 @@
 
 /* Base Q Card */
 .q-card {
-  padding: 32px 28px;
-  margin-bottom: 20px;
+  padding: 40px 32px;
+  margin-bottom: 24px;
   position: relative;
   overflow: hidden;
+  border-radius: 28px;
 }
 
 .q-card::before {
@@ -659,10 +660,11 @@
 .q-text {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(17px, 3vw, 21px);
-  line-height: 1.45;
+  font-size: clamp(18px, 4vw, 24px);
+  line-height: 1.4;
   color: var(--text);
   margin-bottom: 24px;
+  text-align: center;
 }
 
 .mascot-row {
@@ -1092,13 +1094,23 @@
 
 .get-ready-text {
   font-family: var(--font-head);
-  font-size: 38px;
+  font-size: 2.5rem;
   font-weight: 900;
-  color: #fff;
+  color: var(--gold);
   text-transform: uppercase;
   letter-spacing: 2px;
-  text-shadow: 0 0 30px var(--gold), 0 0 60px var(--gold);
-  animation: textGlitch 0.2s infinite;
+  text-align: center;
+  display: block;
+  width: 100%;
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+.timer-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 80px;
 }
 
 @keyframes textGlitch {

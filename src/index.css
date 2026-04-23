@@ -31,37 +31,34 @@
 
 html, body, #root {
   height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
 }
 
-body {
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Typography Base */
-h1, h2, h3, h4, h5, h6 { font-family: var(--font-head); }
-button, input { font-family: var(--font-body); }
-
-/* Globals & Layouts */
+/* Globals & Layouts - Force Perfect Center */
 .screen-container {
   position: absolute;
   inset: 0;
   z-index: 10;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* Changed from center to allow natural scrolling */
-  padding: 0; /* Removing padding to allow full-bleed designs */
+  align-items: center !important;
+  justify-content: center !important; /* FIXED: Was flex-start, now center */
+  padding: 0;
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
+/* Allow scrolling only on the Welcome page */
 .screen-container.welcome-mode {
-  display: block; /* Disable flex for the long scrolling page */
+  justify-content: flex-start !important; 
+  display: block !important;
 }
 
 /* Scrollbar styling for a cleaner look */
