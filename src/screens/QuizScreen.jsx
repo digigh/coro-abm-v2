@@ -49,17 +49,39 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
     initialProgress?.started_at ? new Date(initialProgress.started_at).getTime() : Date.now()
   );
 
-  // ─── Fetch questions ───────────────────────────────────────────────
+  // ─── Fetch questions & Settings ────────────────────────────────────
   useEffect(() => {
     (async () => {
-      const { data, error } = await supabase
+      // 1. Fetch Settings (Question Limit)
+      let questionLimit = 13;
+      try {
+        const { data: settingsData } = await supabase
+          .from('quiz_settings')
+          .select('max_questions')
+          .single();
+        if (settingsData) questionLimit = settingsData.max_questions;
+      } catch (e) { console.log('quiz_settings table might not exist yet'); }
+
+      // 2. Fetch Questions (Only Active)
+      const query = supabase
         .from('questions')
         .select('*')
-        .eq('question_set_id', currentSet)
-        .order('id', { ascending: true });
+        .eq('question_set_id', currentSet);
+      
+      // Attempt to filter by is_active if column exists
+      try {
+        query.eq('is_active', true);
+      } catch (e) { /* ignore if column missing */ }
 
-      if (data && data.length > 0) setQuestions(data);
-      else console.error('Failed to fetch questions', error);
+      const { data, error } = await query.order('id', { ascending: true });
+
+      if (data && data.length > 0) {
+        // Apply question limit
+        const finalQuestions = data.slice(0, questionLimit);
+        setQuestions(finalQuestions);
+      } else {
+        console.error('Failed to fetch questions', error);
+      }
 
       if (!initialProgress) {
         setQuizStartTime(Date.now());

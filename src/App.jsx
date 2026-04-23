@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-// We will build these screens in the next step
+// Screens
+import WelcomeScreen from './screens/WelcomeScreen';
 import LandingScreen from './screens/LandingScreen';
 import LoginScreen from './screens/LoginScreen';
 import LoaderScreen from './screens/LoaderScreen';
 import QuizScreen from './screens/QuizScreen';
 import CompletionScreen from './screens/CompletionScreen';
+import AdminPanel from './screens/AdminPanel'; // New
 
 import './index.css';
 
@@ -14,13 +16,25 @@ import './index.css';
 const ACTIVE_QUESTION_SET = 'macao_2025';
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('landing'); // landing, login, loader, quiz, completion
+  const [currentScreen, setCurrentScreen] = useState('welcome'); // welcome, landing, login, loader, quiz, completion, admin
   const [employee, setEmployee] = useState(null);
   const [initialProgress, setInitialProgress] = useState(null);
   const [quizScore, setQuizScore] = useState(0);
   const [timeTaken, setTimeTaken] = useState(0);
 
-  // Framer Motion Animation Variants for Screen Transitions
+  // Check for admin passcode in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('admin') === 'Caffeine') {
+      setCurrentScreen('admin');
+      
+      // HIGH SECURITY: Immediately wipe the passcode from the address bar
+      // This prevents the password from showing in browser history or to onlookers
+      const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+      window.history.replaceState({ path: newUrl }, '', newUrl);
+    }
+  }, []);
+
   const screenVariants = {
     initial: { opacity: 0, y: 30 },
     in: { opacity: 1, y: 0 },
@@ -31,17 +45,21 @@ function App() {
 
   return (
     <>
-      <div id="ambientBg">
-        <div className="orb orb1"></div>
-        <div className="orb orb2"></div>
-        <div className="orb orb3"></div>
-      </div>
-      <div className="bg-grid"></div>
+      {currentScreen !== 'welcome' && currentScreen !== 'admin' && (
+        <>
+          <div id="ambientBg">
+            <div className="orb orb1"></div>
+            <div className="orb orb2"></div>
+            <div className="orb orb3"></div>
+          </div>
+          <div className="bg-grid"></div>
+        </>
+      )}
 
       <AnimatePresence mode="wait">
         <motion.div
           key={currentScreen}
-          className="screen-container"
+          className={`screen-container ${currentScreen === 'welcome' ? 'welcome-mode' : ''} ${currentScreen === 'admin' ? 'admin-mode' : ''}`}
           variants={screenVariants}
           initial="initial"
           animate="in"
@@ -49,7 +67,11 @@ function App() {
           transition={transition}
           style={{ width: '100%', height: '100%' }}
         >
-          {currentScreen === 'landing' && <LandingScreen onNext={() => setCurrentScreen('login')} />}
+          {currentScreen === 'admin' && <AdminPanel onExit={() => setCurrentScreen('welcome')} />}
+
+          {currentScreen === 'welcome' && <WelcomeScreen onNext={() => setCurrentScreen('landing')} />}
+
+          {currentScreen === 'landing' && <LandingScreen onNext={() => setCurrentScreen('login')} onHome={() => setCurrentScreen('welcome')} />}
           
           {currentScreen === 'login' && 
             <LoginScreen 
@@ -90,7 +112,7 @@ function App() {
               employee={employee}
               score={quizScore} 
               timeTaken={timeTaken || 0} 
-              onRestart={() => setCurrentScreen('landing')} 
+              onRestart={() => setCurrentScreen('welcome')} 
             />
           }
         </motion.div>

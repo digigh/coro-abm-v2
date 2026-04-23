@@ -1,13 +1,85 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { UserCircle, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { UserCircle, AlertCircle, Clock } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import './screens.css';
+
+const HowToPlayModal = ({ onComplete }) => {
+  const [timeLeft, setTimeLeft] = useState(10);
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      onComplete();
+      return;
+    }
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft, onComplete]);
+
+  return (
+    <motion.div 
+      className="how-to-play-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div 
+        className="how-to-play-card"
+        initial={{ scale: 0.8, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+      >
+        <div className="scanning-beam"></div>
+        <div className="timer-section">
+          <div className="clock-icon">
+            <Clock size={40} className="pulse-icon" />
+          </div>
+          <div className="timer-display">
+            {timeLeft <= 3 ? (
+              <motion.span 
+                key="ready"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1.2, opacity: 1 }}
+                className="get-ready-text"
+              >
+                Get ready to play!
+              </motion.span>
+            ) : (
+              <span className="seconds-text">{timeLeft}s</span>
+            )}
+          </div>
+        </div>
+
+        <div className="instructions-section">
+          <h2>How to Play ✦</h2>
+          <ul>
+            <li>You have 10 seconds to answer each question.</li>
+            <li>The quiz will automatically move to the next question—you cannot go back.</li>
+            <li>If time runs out, the question will be marked as 0 (no score).</li>
+            <li>If you leave the game midway, it will resume from where you left off when you return.</li>
+          </ul>
+        </div>
+
+        <div className="progress-track">
+          <motion.div 
+            className="progress-fill"
+            initial={{ width: "100%" }}
+            animate={{ width: "0%" }}
+            transition={{ duration: 10, ease: "linear" }}
+          />
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 export default function LoginScreen({ currentSet, onNext, onAlreadyPlayed }) {
   const [empId, setEmpId] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [pendingData, setPendingData] = useState(null);
 
   const handleLogin = async () => {
     if (!empId.trim()) {
@@ -32,7 +104,7 @@ export default function LoginScreen({ currentSet, onNext, onAlreadyPlayed }) {
         return;
       }
 
-      // 2. Check if they have already played THIS specific question set
+      // Check if they have already played THIS specific question set
       const { data: progressData, error: progressError } = await supabase
         .from('user_progress')
         .select('*')
@@ -41,34 +113,10 @@ export default function LoginScreen({ currentSet, onNext, onAlreadyPlayed }) {
         .single();
 
       if (progressData && progressData.is_completed) {
-        // They already completed this set, calculate their past time and route them!
         const timeStarted = new Date(progressData.started_at).getTime();
         const timeCompleted = new Date(progressData.completed_at).getTime();
         const timeTaken = timeCompleted - timeStarted;
         
-        // Push as record for already completed user
-        try {
-          fetch('https://aiautomation.digicides.com/webhook/abm-web', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              status: 'already_played',
-              employee_id: data.employee_id,
-              name: data.name,
-              division: data.division,
-              business_unit: data.business_unit,
-              score: progressData.score,
-              current_step: progressData.current_question_index,
-              is_completed: true,
-              started_at: progressData.started_at,
-              completed_at: progressData.completed_at,
-              date: new Date().toLocaleDateString()
-            })
-          });
-        } catch (webhookErr) {
-          console.error('Webhook push failed:', webhookErr);
-        }
-
         onAlreadyPlayed(data, progressData.score, timeTaken);
         return;
       }
@@ -91,30 +139,18 @@ export default function LoginScreen({ currentSet, onNext, onAlreadyPlayed }) {
       
       if (upsertError) throw upsertError;
 
-      // Webhook Trigger: Started vs Resumed
-      try {
-        fetch('https://aiautomation.digicides.com/webhook/abm-web', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            status: progressData ? 'resumed' : 'started',
-            employee_id: data.employee_id,
-            name: data.name,
-            division: data.division,
-            business_unit: data.business_unit,
-            score: finalProgress.score,
-            current_step: finalProgress.current_question_index,
-            is_completed: false,
-            started_at: finalProgress.started_at,
-            date: new Date().toLocaleDateString()
-          })
-        });
-      } catch (err) { /* silent fail */ }
-
-      onNext(data, finalProgress);
+      // Instead of calling onNext, we show the How to Play modal
+      setPendingData({ user: data, progress: finalProgress });
+      setShowHowToPlay(true);
     } catch (err) {
       setError('Connection error or database issue. Please try again.');
       setLoading(false);
+    }
+  };
+
+  const handleModalComplete = () => {
+    if (pendingData) {
+      onNext(pendingData.user, pendingData.progress);
     }
   };
 
@@ -125,74 +161,60 @@ export default function LoginScreen({ currentSet, onNext, onAlreadyPlayed }) {
   }
 
   return (
-    <motion.div 
-      className="glass input-card"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4 }}
-    >
-      <div className="input-header">
-        <div className="badge" style={{ marginBottom: 16 }}>
-          <div className="badge-dot"></div>
-          Secure Access
-        </div>
-        <h2 className="input-title">Who's exploring?</h2>
-        <p className="input-sub">Enter your Coromandel ID to sync your journey.</p>
-      </div>
+    <>
+      <AnimatePresence>
+        {showHowToPlay && <HowToPlayModal onComplete={handleModalComplete} />}
+      </AnimatePresence>
 
-      <div className="field">
-        <label className="field-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <UserCircle size={14} /> Employee ID
-        </label>
-        <input 
-          className="field-input" 
-          type="text" 
-          placeholder="e.g. EMP-1042" 
-          value={empId}
-          onChange={(e) => setEmpId(e.target.value.toUpperCase())}
-          onKeyDown={handleKeyDown}
-          autoComplete="off"
-          disabled={loading}
-        />
-      </div>
-
-      <div style={{
-        marginTop: 20, marginBottom: 20, padding: 16,
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: 12,
-        fontSize: 13, color: 'rgba(255,255,255,0.6)',
-        lineHeight: 1.5,
-        fontFamily: 'var(--font-body)'
-      }}>
-        <div style={{ color: 'var(--gold)', fontWeight: 600, marginBottom: 8, fontSize: 12, letterSpacing: 1, textTransform: 'uppercase' }}>
-          How to Play ✦
-        </div>
-        <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <li>You have <strong>10 seconds</strong> to answer each question.</li>
-          <li>The quiz will automatically move to the next question—<strong>you cannot go back.</strong></li>
-          <li>If time runs out, the question will be marked as <strong>0 (no score).</strong></li>
-          <li>If you leave the game midway, it will <strong>resume from where you left off</strong> when you return.</li>
-        </ul>
-      </div>
-
-      {error && (
-        <motion.div 
-          className="error-msg"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <AlertCircle size={16} /> {error}
-        </motion.div>
-      )}
-
-      <button 
-        className="submit-btn" 
-        onClick={handleLogin}
-        disabled={loading}
+      <motion.div 
+        className="glass input-card"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
       >
-        {loading ? 'Verifying...' : 'Begin My Journey ✦'}
-      </button>
-    </motion.div>
+        <div className="input-header">
+          <div className="badge" style={{ marginBottom: 16 }}>
+            <div className="badge-dot"></div>
+            Secure Access
+          </div>
+          <h2 className="input-title">Who's exploring?</h2>
+          <p className="input-sub">Enter your Coromandel ID to sync your journey.</p>
+        </div>
+
+        <div className="field">
+          <label className="field-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <UserCircle size={14} /> Employee ID
+          </label>
+          <input 
+            className="field-input" 
+            type="text" 
+            placeholder="e.g. 98765" 
+            value={empId}
+            onChange={(e) => setEmpId(e.target.value.toUpperCase())}
+            onKeyDown={handleKeyDown}
+            autoComplete="off"
+            disabled={loading || showHowToPlay}
+          />
+        </div>
+
+        {error && (
+          <motion.div 
+            className="error-msg"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertCircle size={16} /> {error}
+          </motion.div>
+        )}
+
+        <button 
+          className="submit-btn" 
+          onClick={handleLogin}
+          disabled={loading || showHowToPlay}
+        >
+          {loading ? 'Verifying...' : 'Begin My Journey ✦'}
+        </button>
+      </motion.div>
+    </>
   );
 }

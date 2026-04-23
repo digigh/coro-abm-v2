@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Rocket } from 'lucide-react';
 import './screens.css';
 
-export default function LandingScreen({ onNext }) {
+export default function LandingScreen({ onNext, onHome }) {
   const [isLaunching, setIsLaunching] = useState(false);
 
   const handleLaunch = () => {
@@ -30,6 +30,7 @@ export default function LandingScreen({ onNext }) {
 
         <motion.div
           className="brand-logo-wrap"
+          onClick={onHome}
           initial={{ opacity: 0, scale: 0.7, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: 0.15, type: 'spring', damping: 16, stiffness: 100 }}
@@ -38,7 +39,7 @@ export default function LandingScreen({ onNext }) {
           <div className="logo-orbit-a"><div className="logo-spark" /></div>
           <div className="logo-orbit-b"><div className="logo-spark logo-spark-b" /></div>
 
-          {/* Logo — CSS filter invert makes it dark-mode native, no box needed */}
+          {/* Logo — CSS filter invert makes it dark-mode native */}
           <img src="/coro-logo.png" alt="Coromandel Logo" className="main-logo-img" />
         </motion.div>
 
