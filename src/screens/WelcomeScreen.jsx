@@ -7,150 +7,36 @@ import kowloonImg from '../assets/destinations/kowloon.png';
 import oceanParkImg from '../assets/destinations/oceanpark.png';
 import victoriaPeakImg from '../assets/destinations/victoria_peak.png';
 
-const TransitionOverlay = () => (
-  <motion.div 
-    className="transition-overlay"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-  >
-    <div className="overdrive-singularity"></div>
-    <div className="energy-surge"></div>
-    
-    <div className="hud-ring-wrap">
-      <div className="hud-ring ring-1"></div>
-      <div className="hud-ring ring-2"></div>
-      <div className="hud-ring ring-3"></div>
-    </div>
-
-    {Array(6).fill(0).map((_, i) => (
-      <div key={i} className="lightning-bolt" style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 0.5}s` }}></div>
-    ))}
-
-    <div className="combat-bracket"></div>
-
-    <motion.div 
-      className="screen-shake-wrap"
-      initial={{ scale: 0.5, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ type: 'spring', damping: 10 }}
-    >
-      <div className="overdrive-title">INITIATING</div>
-    </motion.div>
-  </motion.div>
+const VideoTransition = () => (
+  <div className="video-transition-overlay" key="video-overlay">
+    <video 
+      src="/replace_gif.mp4" 
+      className="video-asset" 
+      autoPlay 
+      muted 
+      loop
+      playsInline 
+    />
+  </div>
 );
-
-const RocketLaunch = () => {
-  const particles = Array.from({ length: 24 });
-  
-  return (
-    <motion.div 
-      className="rocket-launch-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <motion.div 
-        className="launch-center"
-        initial={{ y: 0 }}
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 0.1, repeat: 10 }}
-      >
-        {/* Exhaust Particle System */}
-        <div className="particle-field">
-          {particles.map((_, i) => (
-            <motion.div
-              key={i}
-              className="rocket-particle"
-              initial={{ scale: 1, opacity: 1, y: 0, x: 0 }}
-              animate={{ 
-                y: [0, 200 + Math.random() * 300], 
-                x: [(Math.random() - 0.5) * 100],
-                scale: [1, 0],
-                opacity: [1, 0]
-              }}
-              transition={{ 
-                duration: 0.8 + Math.random() * 0.5, 
-                repeat: Infinity,
-                delay: Math.random() * 0.5
-              }}
-            />
-          ))}
-        </div>
-
-        {/* The Rocket Vessel */}
-        <motion.div 
-          className="rocket-vessel"
-          initial={{ scale: 0.8, y: 400, rotate: -45 }}
-          animate={{ 
-            y: [400, 0, -1200],
-            rotate: [-45, -45, -30],
-            scale: [0.8, 1.2, 2.5]
-          }}
-          transition={{ 
-            times: [0, 0.4, 1],
-            duration: 1.5,
-            ease: "easeIn"
-          }}
-        >
-          <div className="rocket-body-wrap">
-            <Rocket size={100} className="rocket-icon-main" />
-            <motion.div 
-              className="flame-wrap"
-              animate={{ scale: [1, 1.4, 1.2], opacity: [0.8, 1, 0.9] }}
-              transition={{ repeat: Infinity, duration: 0.1 }}
-            >
-              <Flame size={60} className="rocket-flame-icon" fill="currentColor" />
-            </motion.div>
-          </div>
-          
-          {/* Energy Rings */}
-          {[1, 2, 3].map(i => (
-            <motion.div
-              key={i}
-              className="energy-ring"
-              animate={{ scale: [1, 3], opacity: [0.5, 0] }}
-              transition={{ repeat: Infinity, duration: 0.4, delay: i * 0.1 }}
-            />
-          ))}
-        </motion.div>
-      </motion.div>
-
-      {/* Screen Distortion Flash */}
-      <motion.div 
-        className="launch-flash"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ delay: 0.5, duration: 0.3 }}
-      />
-    </motion.div>
-  );
-};
 
 const WelcomeScreen = ({ onNext }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isLaunching, setIsLaunching] = useState(false);
 
   const handleRegister = () => {
-    setIsLaunching(true);
-    
-    // The "Blast Off" timing matches the Framer Motion sequence
-    setTimeout(() => {
-      setIsLaunching(false);
-      setIsTransitioning(true);
-    }, 1500);
+    if (isTransitioning) return;
+    setIsTransitioning(true);
 
-    // Final navigation
+    // 5-second video loop
     setTimeout(() => {
       onNext();
-    }, 4500);
+    }, 5000); 
   };
 
   return (
-    <div className="welcome-screen">
+    <div className={`welcome-screen ${isTransitioning ? 'pointer-events-none' : ''}`}>
       <AnimatePresence>
-        {isLaunching && <RocketLaunch />}
-        {isTransitioning && <TransitionOverlay />}
+        {isTransitioning && <VideoTransition />}
       </AnimatePresence>
 
       <header className="welcome-header">

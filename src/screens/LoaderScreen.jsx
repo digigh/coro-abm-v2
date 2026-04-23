@@ -6,90 +6,78 @@ export default function LoaderScreen({ employee, onNext }) {
   const firstName = employee?.name?.split(' ')[0] ?? 'Explorer';
 
   useEffect(() => {
-    const timer = setTimeout(() => onNext(), 2800);
+    const timer = setTimeout(() => onNext(), 3000);
     return () => clearTimeout(timer);
   }, [onNext]);
 
   return (
-    <div className="loader-content">
+    <div className="loader-content-minimal">
       <style>{`
-        @keyframes planeFly {
-          0%   { transform: translateX(-80px) translateY(20px) rotate(-5deg); opacity: 0; }
-          20%  { opacity: 1; }
-          80%  { opacity: 1; }
-          100% { transform: translateX(80px) translateY(-20px) rotate(8deg); opacity: 0; }
-        }
-        @keyframes trailFade {
-          0%   { opacity: 0; width: 0; }
-          40%  { opacity: 0.5; }
-          100% { opacity: 0; width: 120px; }
-        }
-        .plane-wrap {
-          position: relative;
-          width: 180px;
-          height: 120px;
+        .loader-content-minimal {
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
-          margin: 0 auto 24px;
-        }
-        .plane-emoji {
-          font-size: 56px;
-          animation: planeFly 2s ease-in-out infinite;
-          display: inline-block;
+          height: 100vh;
+          width: 100vw;
+          background: #000;
           position: relative;
-          z-index: 2;
+          overflow: hidden;
         }
-        .plane-trail {
+        .scan-laser {
           position: absolute;
-          left: 10%;
-          top: 50%;
+          width: 100%;
           height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(250,204,21,0.6), transparent);
-          border-radius: 2px;
-          animation: trailFade 2s ease-in-out infinite;
+          background: linear-gradient(90deg, transparent, var(--gold), transparent);
+          box-shadow: 0 0 20px var(--gold);
+          z-index: 10;
+          top: 0;
+          animation: scanVertical 3s ease-in-out forwards;
         }
-        @keyframes dotPulse {
-          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-          40% { transform: scale(1); opacity: 1; }
+        @keyframes scanVertical {
+          0% { top: 30%; opacity: 0; }
+          20% { opacity: 1; }
+          80% { opacity: 1; }
+          100% { top: 70%; opacity: 0; }
         }
-        .dot-loader { display: flex; gap: 8px; justify-content: center; margin-top: 20px; }
-        .dot-loader span {
-          width: 8px; height: 8px; border-radius: 50%; background: var(--gold);
-          animation: dotPulse 1.4s ease-in-out infinite;
+        .welcome-name {
+          font-family: var(--font-head);
+          font-size: clamp(3rem, 10vw, 6rem);
+          font-weight: 200;
+          color: #fff;
+          text-transform: uppercase;
+          letter-spacing: 15px;
+          margin: 0;
+          text-align: center;
+          opacity: 0.8;
+          filter: blur(8px);
+          animation: textClear 2s ease-out forwards;
         }
-        .dot-loader span:nth-child(2) { animation-delay: 0.2s; }
-        .dot-loader span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes textClear {
+          0% { filter: blur(8px); letter-spacing: 30px; opacity: 0; }
+          100% { filter: blur(0px); letter-spacing: 15px; opacity: 1; }
+        }
+        .loading-tag {
+          font-family: var(--font-mono);
+          font-size: 12px;
+          letter-spacing: 4px;
+          color: var(--gold);
+          margin-top: 20px;
+          text-transform: uppercase;
+          opacity: 0.6;
+        }
       `}</style>
 
-      {/* Plane Animation */}
+      <div className="scan-laser"></div>
+      
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.1 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
-        <div className="plane-wrap">
-          <div className="plane-trail"></div>
-          <span className="plane-emoji">✈️</span>
-        </div>
-      </motion.div>
-
-      {/* Text */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        style={{ textAlign: 'center' }}
-      >
-        <div className="badge" style={{ marginBottom: 18, display: 'inline-flex' }}>
-          <div className="badge-dot"></div>
-          Preparing your experience
-        </div>
-        <h2 className="loader-title">Welcome, {firstName}!</h2>
-        <p className="loader-sub">Booking your first-class quiz experience</p>
-        <div className="dot-loader">
-          <span></span><span></span><span></span>
-        </div>
+        <h1 className="welcome-name">{firstName}</h1>
+        <div className="loading-tag">Identity Verified • Initiating Session</div>
       </motion.div>
     </div>
   );

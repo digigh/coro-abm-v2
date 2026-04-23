@@ -67,14 +67,15 @@ function App() {
           transition={transition}
           style={{ width: '100%', height: '100%' }}
         >
-          {currentScreen === 'admin' && <AdminPanel onExit={() => setCurrentScreen('welcome')} />}
+          {currentScreen === 'admin' && <AdminPanel key="admin-screen" onExit={() => setCurrentScreen('welcome')} />}
 
-          {currentScreen === 'welcome' && <WelcomeScreen onNext={() => setCurrentScreen('landing')} />}
+          {currentScreen === 'welcome' && <WelcomeScreen key="welcome-screen" onNext={() => setCurrentScreen('landing')} />}
 
-          {currentScreen === 'landing' && <LandingScreen onNext={() => setCurrentScreen('login')} onHome={() => setCurrentScreen('welcome')} />}
+          {currentScreen === 'landing' && <LandingScreen key="landing-screen" onNext={() => setCurrentScreen('login')} onHome={() => setCurrentScreen('welcome')} />}
           
           {currentScreen === 'login' && 
             <LoginScreen 
+              key="login-screen"
               currentSet={ACTIVE_QUESTION_SET}
               onNext={(emp, progressData) => { 
                 setEmployee(emp); 
@@ -91,11 +92,12 @@ function App() {
           }
           
           {currentScreen === 'loader' && 
-            <LoaderScreen employee={employee} onNext={() => setCurrentScreen('quiz')} />
+            <LoaderScreen key="loader-screen" employee={employee} onNext={() => setCurrentScreen('quiz')} />
           }
           
           {currentScreen === 'quiz' && 
             <QuizScreen 
+              key="quiz-screen"
               employee={employee} 
               initialProgress={initialProgress}
               currentSet={ACTIVE_QUESTION_SET}
@@ -109,6 +111,7 @@ function App() {
           
           {currentScreen === 'completion' && 
             <CompletionScreen 
+              key="completion-screen"
               employee={employee}
               score={quizScore} 
               timeTaken={timeTaken || 0} 

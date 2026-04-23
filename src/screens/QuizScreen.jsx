@@ -32,9 +32,7 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
   
   // Timer derivations based strictly on DB-started times
   const [currentQuestionStartTime, setCurrentQuestionStartTime] = useState(
-    initialProgress && initialProgress.current_question_start_time 
-      ? new Date(initialProgress.current_question_start_time).getTime() 
-      : Date.now()
+    initialProgress?.current_question_start_time ? new Date(initialProgress.current_question_start_time).getTime() : Date.now()
   );
   
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIME);
@@ -79,14 +77,30 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
         // Apply question limit
         const finalQuestions = data.slice(0, questionLimit);
         setQuestions(finalQuestions);
+
+        // FORCE TIMER RESET for Question #1
+        const currentIndex = initialProgress?.current_question_index || 0;
+        if (currentIndex === 0) {
+          const nowMs = Date.now();
+          const nowIso = new Date(nowMs).toISOString();
+          
+          setQuizStartTime(nowMs);
+          setCurrentQuestionStartTime(nowMs);
+
+          // Update DB immediately so server-side validation is in sync with user's screen
+          await supabase
+            .from('user_progress')
+            .update({ 
+              current_question_start_time: nowIso,
+              started_at: nowIso 
+            })
+            .eq('employee_id', employee.employee_id)
+            .eq('question_set_id', currentSet);
+        }
       } else {
         console.error('Failed to fetch questions', error);
       }
 
-      if (!initialProgress) {
-        setQuizStartTime(Date.now());
-        setCurrentQuestionStartTime(Date.now());
-      }
       setLoading(false);
       setTimerActive(true);
     })();

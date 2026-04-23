@@ -20,50 +20,40 @@ const HowToPlayModal = ({ onComplete }) => {
 
   return (
     <motion.div 
-      className="how-to-play-overlay"
+      className="modal-minimal-overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <motion.div 
-        className="how-to-play-card"
-        initial={{ scale: 0.8, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
+        className="modal-minimal-card"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
       >
-        <div className="scanning-beam"></div>
-        <div className="timer-section">
-          <div className="clock-icon">
-            <Clock size={40} className="pulse-icon" />
+        <div className="modal-header-mini">
+          <Clock size={20} className="mini-clock" />
+          <span className="mini-timer">{timeLeft}s</span>
+        </div>
+
+        <div className="modal-body-mini">
+          <h2 className="mini-title">The Guidelines ✦</h2>
+          <div className="mini-rule">
+            <Zap size={14} className="mini-icon" />
+            <span>10 seconds per question. No retreats.</span>
           </div>
-          <div className="timer-display">
-            {timeLeft <= 3 ? (
-              <motion.span 
-                key="ready"
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1.2, opacity: 1 }}
-                className="get-ready-text"
-              >
-                Get ready to play!
-              </motion.span>
-            ) : (
-              <span className="seconds-text">{timeLeft}s</span>
-            )}
+          <div className="mini-rule">
+            <Zap size={14} className="mini-icon" />
+            <span>Auto-advancement enforced. Precision is key.</span>
+          </div>
+          <div className="mini-rule">
+            <Zap size={14} className="mini-icon" />
+            <span>Mid-game exit saves progress automatically.</span>
           </div>
         </div>
 
-        <div className="instructions-section">
-          <h2>How to Play ✦</h2>
-          <ul>
-            <li>You have 10 seconds to answer each question.</li>
-            <li>The quiz will automatically move to the next question—you cannot go back.</li>
-            <li>If time runs out, the question will be marked as 0 (no score).</li>
-            <li>If you leave the game midway, it will resume from where you left off when you return.</li>
-          </ul>
-        </div>
-
-        <div className="progress-track">
+        <div className="mini-progress-track">
           <motion.div 
-            className="progress-fill"
+            className="mini-progress-fill"
             initial={{ width: "100%" }}
             animate={{ width: "0%" }}
             transition={{ duration: 10, ease: "linear" }}
@@ -131,8 +121,7 @@ export default function LoginScreen({ currentSet, onNext, onAlreadyPlayed }) {
           current_question_index: progressData?.current_question_index || 0,
           is_completed: false,
           answers_json: progressData?.answers_json || {},
-          started_at: progressData?.started_at || new Date().toISOString(),
-          current_question_start_time: new Date().toISOString()
+          started_at: progressData?.started_at || new Date().toISOString()
         }, { onConflict: 'employee_id, question_set_id' })
         .select('*')
         .single();
