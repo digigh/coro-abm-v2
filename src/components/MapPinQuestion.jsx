@@ -62,12 +62,9 @@ export default function MapPinQuestion({
           const pos = PIN_POSITIONS[idx];
           const zone = ZONE_META[idx];
           const isSelected = idx === answeredIdx;
-          const isCorrectSel = isSelected && isCorrect;
-          const isWrongSel = isSelected && !isCorrect;
-          const isDimmed = isAnswered && !isSelected;
+          // No feedback variables - neutral survey mode
 
-          const borderColor = isWrongSel ? '#F43F5E' : zone.color;
-          const glowColor = isCorrectSel ? zone.glow : isWrongSel ? 'rgba(244,63,94,0.5)' : 'transparent';
+          const glowColor = 'transparent';
 
           return (
             <motion.div
@@ -82,7 +79,7 @@ export default function MapPinQuestion({
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
               }}
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: isDimmed ? 0.72 : 1, opacity: isDimmed ? 0.35 : 1 }}
+              animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: idx * 0.1, type: 'spring', stiffness: 280, damping: 20 }}
             >
               {/* Pulse ring */}
@@ -99,25 +96,13 @@ export default function MapPinQuestion({
 
               {/* Pin circle */}
               <motion.div
-                animate={
-                  isWrongSel ? { x: [0, -9, 9, -7, 7, 0] }
-                  : isCorrectSel ? { scale: [1, 1.3, 1.15] }
-                  : { y: [0, -5, 0] }
-                }
-                transition={
-                  isWrongSel || isCorrectSel
-                    ? { duration: 0.4, ease: 'easeOut' }
-                    : { duration: 2.6, delay: idx * 0.45, repeat: Infinity, ease: 'easeInOut' }
-                }
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 2.6, delay: idx * 0.45, repeat: Infinity, ease: 'easeInOut' }}
                 whileHover={!isAnswered ? { scale: 1.22, y: -7 } : {}}
                 style={{
                   width: 50, height: 50, borderRadius: '50%',
-                  background: isWrongSel
-                    ? 'rgba(244,63,94,0.25)'
-                    : isCorrectSel
-                      ? `radial-gradient(circle, ${zone.color}44, ${zone.color}aa)`
-                      : 'rgba(0,0,0,0.6)',
-                  border: `2.5px solid ${borderColor}`,
+                  background: 'rgba(0,0,0,0.6)',
+                  border: `2.5px solid ${zone.color}99`,
                   backdropFilter: 'blur(10px)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
                   boxShadow: [
@@ -128,13 +113,13 @@ export default function MapPinQuestion({
                   transition: 'border-color 0.3s, background 0.3s, box-shadow 0.3s',
                 }}
               >
-                {isCorrectSel ? '✅' : isWrongSel ? '❌' : zone.icon}
+                {zone.icon}
               </motion.div>
 
               {/* Letter badge */}
               <div style={{
                 width: 20, height: 20, borderRadius: '50%',
-                background: isWrongSel ? '#F43F5E' : zone.color,
+                background: zone.color,
                 border: '2px solid rgba(0,0,0,0.7)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 10, color: '#000',
@@ -164,9 +149,7 @@ export default function MapPinQuestion({
         {question.options && question.options.map((opt, idx) => {
           const zone = ZONE_META[idx];
           const isSelected = idx === answeredIdx;
-          const isCorrectSel = isSelected && isCorrect;
-          const isWrongSel = isSelected && !isCorrect;
-          const isDimmed = isAnswered && !isSelected;
+          // No feedback variables - neutral survey mode
 
           return (
             <motion.div
@@ -175,28 +158,24 @@ export default function MapPinQuestion({
               whileHover={!isAnswered ? { scale: 1.03, y: -2 } : {}}
               whileTap={!isAnswered ? { scale: 0.97 } : {}}
               initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: isDimmed ? 0.3 : 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.08 + 0.2 }}
               style={{
                 display: 'flex', alignItems: 'center', gap: 9,
-                background: isCorrectSel
-                  ? `rgba(${zone.color === '#22c55e' ? '34,197,94' : zone.color === '#e879f9' ? '232,121,249' : zone.color === '#60a5fa' ? '96,165,250' : '251,146,60'},0.12)`
-                  : isWrongSel
-                    ? 'rgba(244,63,94,0.1)'
-                    : 'rgba(255,255,255,0.05)',
-                border: `1.5px solid ${isCorrectSel ? zone.color : isWrongSel ? '#F43F5E' : 'rgba(255,255,255,0.1)'}`,
+                background: 'rgba(255,255,255,0.05)',
+                border: '1.5px solid rgba(255,255,255,0.1)',
                 borderRadius: 12,
                 padding: '9px 12px',
                 cursor: isAnswered ? 'default' : 'pointer',
                 backdropFilter: 'blur(8px)',
-                boxShadow: isCorrectSel ? `0 0 16px ${zone.glow}` : isWrongSel ? '0 0 12px rgba(244,63,94,0.3)' : 'none',
+                boxShadow: 'none',
                 transition: 'all 0.3s',
               }}
             >
               {/* Letter chip */}
               <div style={{
                 width: 26, height: 26, borderRadius: 7, flexShrink: 0,
-                background: isWrongSel ? '#F43F5E' : zone.color,
+                background: zone.color,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 12, color: '#000',
               }}>
@@ -205,9 +184,8 @@ export default function MapPinQuestion({
               {/* Option text — fully visible now */}
               <span style={{
                 fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 12,
-                color: isCorrectSel ? zone.color : isWrongSel ? '#F43F5E' : 'rgba(255,255,255,0.85)',
+                color: 'rgba(255,255,255,0.85)',
                 lineHeight: 1.35,
-                transition: 'color 0.3s',
               }}>
                 {opt}
               </span>
@@ -216,27 +194,7 @@ export default function MapPinQuestion({
         })}
       </div>
 
-      {/* Continue */}
-      {isAnswered && isCorrect && (
-        <motion.button
-          className="next-btn-q"
-          onClick={() => onContinue()}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-          style={{ marginTop: 12 }}
-        >
-          Continue <ArrowRight size={18} />
-        </motion.button>
-      )}
 
-      {/* Moving on */}
-      {isAnswered && !isCorrect && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          style={{ textAlign: 'center', color: '#F43F5E', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, marginTop: 10 }}
-        >
-          Moving on...
-        </motion.div>
-      )}
     </div>
   );
 }

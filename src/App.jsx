@@ -77,6 +77,7 @@ function App() {
             <LoginScreen 
               key="login-screen"
               currentSet={ACTIVE_QUESTION_SET}
+              onBack={() => setCurrentScreen('landing')}
               onNext={(emp, progressData) => { 
                 setEmployee(emp); 
                 setInitialProgress(progressData);

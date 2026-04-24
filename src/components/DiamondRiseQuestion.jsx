@@ -73,66 +73,7 @@ export default function DiamondRiseQuestion({
           />
         </div>
 
-        {/* ── THE DIAMOND ── */}
-        <AnimatePresence>
-          {(isAnswered && isCorrect) && (
-            <motion.div
-              initial={{ y: 20, opacity: 0, scale: 0.5 }}
-              animate={{ y: -80, opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', stiffness: 50, damping: 12, delay: 0.2 }}
-              style={{
-                position: 'absolute', bottom: 60, left: '50%', marginLeft: -45,
-                width: 90, height: 110, zIndex: 10,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                filter: 'drop-shadow(0 0 25px rgba(34,211,238,0.8))',
-              }}
-            >
-              <div style={{ fontSize: 75, filter: 'hue-rotate(180deg)' }}>💎</div>
-              {/* Shine Beams */}
-              {[0, 45, 90, 135].map((ang, i) => (
-                <motion.div
-                  key={i}
-                  animate={{ opacity: [0, 0.8, 0], scale: [0.8, 1.5, 0.8] }}
-                  transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
-                  style={{
-                    position: 'absolute', width: 2, height: 160,
-                    background: 'linear-gradient(to top, transparent, rgba(255,255,255,0.8), transparent)',
-                    transform: `rotate(${ang}deg)`,
-                  }}
-                />
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Laser Lights on success */}
-        {isAnswered && isCorrect && (
-          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-            {[15, 35, 65, 85].map((x, i) => (
-              <motion.div
-                key={i}
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 300, opacity: [0, 0.4, 0] }}
-                transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
-                style={{
-                  position: 'absolute', left: `${x}%`, top: 0,
-                  width: 1, background: '#2DD4BF',
-                  transform: `rotate(${i % 2 === 0 ? '-15deg' : '15deg'})`,
-                  boxShadow: '0 0 10px #2DD4BF',
-                }}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Incorrect Shake Feedback */}
-        {isAnswered && !isCorrect && (
-          <motion.div
-            animate={{ x: [-8, 8, -8, 8, 0] }}
-            transition={{ duration: 0.4 }}
-            style={{ position: 'absolute', inset: 0, background: 'rgba(244,63,94,0.1)', pointerEvents: 'none' }}
-          />
-        )}
+        {/* Success/Failure animations removed per user request */}
 
         {/* Legend */}
         <div style={{
@@ -148,9 +89,7 @@ export default function DiamondRiseQuestion({
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         {HOTELS.map((hotel, idx) => {
           const isSelected = idx === answeredIdx;
-          const isWrongSel = isAnswered && isSelected && !isCorrect;
-          const isCorrectSel = isAnswered && isSelected && isCorrect;
-          const isDimmed = isAnswered && !isSelected;
+          // No feedback variables - neutral survey mode
 
           return (
             <motion.button
@@ -161,11 +100,9 @@ export default function DiamondRiseQuestion({
               style={{
                 all: 'unset', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
                 padding: '14px 8px', borderRadius: 16,
-                background: isSelected
-                  ? (isCorrectSel ? 'rgba(34,211,238,0.15)' : 'rgba(244,63,94,0.15)')
-                  : 'rgba(255,255,255,0.04)',
-                border: `1.5px solid ${isSelected ? (isCorrectSel ? '#22D3EE' : '#F43F5E') : 'rgba(255,255,255,0.1)'}`,
-                opacity: isDimmed ? 0.35 : 1,
+                background: 'rgba(255,255,255,0.04)',
+                border: '1.5px solid rgba(255,255,255,0.1)',
+                opacity: 1,
                 cursor: isAnswered ? 'default' : 'pointer',
                 transition: 'all 0.3s',
               }}
@@ -173,7 +110,7 @@ export default function DiamondRiseQuestion({
               <span style={{ fontSize: 24 }}>{hotel.icon}</span>
               <span style={{
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 11,
-                color: isSelected ? (isCorrectSel ? '#22D3EE' : '#F43F5E') : '#fff',
+                color: '#fff',
                 textAlign: 'center',
               }}>
                 {hotel.name}
@@ -183,22 +120,7 @@ export default function DiamondRiseQuestion({
         })}
       </div>
 
-      {/* Continue */}
-      {isAnswered && isCorrect && (
-        <motion.button
-          className="next-btn-q"
-          onClick={() => onContinue()}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          style={{ marginTop: 16, width: '100%' }}
-        >
-          Continue <ArrowRight size={18} />
-        </motion.button>
-      )}
-      {isAnswered && !isCorrect && (
-        <div style={{ marginTop: 16, textAlign: 'center', color: '#F43F5E', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600 }}>
-          The Diamond rises at Galaxy Macau!
-        </div>
-      )}
+      {/* Feedback text removed per user request */}
     </div>
   );
 }

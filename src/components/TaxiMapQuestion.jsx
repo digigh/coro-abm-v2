@@ -78,16 +78,13 @@ export default function TaxiMapQuestion({
       {/* Question text */}
       <div className="q-text" style={{ marginBottom: 6 }}>{question.question_text}</div>
 
-      {/* Hint */}
       <div style={{
         fontFamily: 'var(--font-body)', fontSize: 12,
         color: 'var(--muted2)', marginBottom: 14,
         display: 'flex', alignItems: 'center', gap: 6,
       }}>
         <span>🚕</span>
-        {isAnswered
-          ? (isCorrect ? '🎉 Correct! Grand Kowloon is in Kowloon Peninsula!' : 'Not quite. Moving on...')
-          : 'Tap a destination to dispatch the taxi!'}
+        {isAnswered ? 'Dispatch complete. Moving on...' : 'Tap a destination to dispatch the taxi!'}
       </div>
 
       {/* ── Map Panel ────────────────────────────────────── */}
@@ -151,48 +148,19 @@ export default function TaxiMapQuestion({
 
           {/* Taxi body */}
           <motion.div
-            animate={
-              !isAnswered
-                ? { y: [0, -3, 0] }
-                : isCorrect
-                  ? { scale: [1, 1.3, 1.1], rotate: [0, 10, -5, 0] }
-                  : { x: [0, -5, 5, -4, 4, 0] }
-            }
-            transition={
-              !isAnswered
-                ? { duration: 1.5, repeat: Infinity, ease: 'easeInOut' }
-                : { duration: 0.5 }
-            }
+            animate={!isAnswered ? { y: [0, -3, 0] } : { scale: 1.1 }}
+            transition={!isAnswered ? { duration: 1.5, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.5 }}
             style={{ fontSize: 34, lineHeight: 1, display: 'block' }}
           >
             🚕
           </motion.div>
-
-          {/* Result badge appears after animation */}
-          {isAnswered && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.6, type: 'spring', stiffness: 300, damping: 16 }}
-              style={{
-                position: 'absolute', top: -14, right: -14,
-                width: 24, height: 24, borderRadius: '50%',
-                background: isCorrect ? '#22D3A3' : '#F43F5E',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 13, boxShadow: `0 0 12px ${isCorrect ? 'rgba(34,211,163,0.7)' : 'rgba(244,63,94,0.7)'}`,
-              }}
-            >
-              {isCorrect ? '✓' : '✕'}
-            </motion.div>
-          )}
+          {/* Result badges removed per user request */}
         </motion.div>
 
         {/* ── Destination Pins on Map ──────────────── */}
         {DESTINATIONS.map((dest, idx) => {
           const isSelected = idx === answeredIdx;
-          const isCorrectSel = isSelected && isCorrect;
-          const isWrongSel = isSelected && !isCorrect;
-          const isDimmed = isAnswered && !isSelected;
+          // No feedback variables needed - neutral survey mode
 
           return (
             <motion.div
@@ -200,8 +168,8 @@ export default function TaxiMapQuestion({
               onClick={() => handleSelect(idx)}
               initial={{ scale: 0, opacity: 0 }}
               animate={{
-                scale: isDimmed ? 0.8 : isCorrectSel ? 1.15 : 1,
-                opacity: isDimmed ? 0.3 : 1,
+                scale: 1,
+                opacity: 1,
               }}
               transition={{ delay: idx * 0.1, type: 'spring', stiffness: 260, damping: 20 }}
               style={{
@@ -228,47 +196,7 @@ export default function TaxiMapQuestion({
                 />
               )}
 
-              {/* Success banner on correct destination */}
-              {isCorrectSel && (
-                <motion.div
-                  initial={{ scale: 0, y: -10 }} animate={{ scale: 1, y: -40 }}
-                  transition={{ delay: 0.7, type: 'spring', stiffness: 280, damping: 18 }}
-                  style={{
-                    position: 'absolute',
-                    background: 'linear-gradient(135deg, #22D3A3, #2DD4BF)',
-                    borderRadius: 10, padding: '4px 10px',
-                    fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 11,
-                    color: '#000',
-                    boxShadow: '0 0 20px rgba(34,211,163,0.7)',
-                    whiteSpace: 'nowrap',
-                    zIndex: 25,
-                    top: 0,
-                  }}
-                >
-                  ✓ SUCCESS!
-                </motion.div>
-              )}
-
-              {/* Wrong banner */}
-              {isWrongSel && (
-                <motion.div
-                  initial={{ scale: 0, y: -10 }} animate={{ scale: 1, y: -38 }}
-                  transition={{ delay: 0.7, type: 'spring', stiffness: 280, damping: 18 }}
-                  style={{
-                    position: 'absolute',
-                    background: 'linear-gradient(135deg, #F43F5E, #e11d48)',
-                    borderRadius: 10, padding: '4px 10px',
-                    fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 11,
-                    color: '#fff',
-                    boxShadow: '0 0 16px rgba(244,63,94,0.6)',
-                    whiteSpace: 'nowrap',
-                    zIndex: 25,
-                    top: 0,
-                  }}
-                >
-                  ✕ Wrong location
-                </motion.div>
-              )}
+              {/* Status banners removed per user request */}
 
               {/* Location pin circle */}
               <motion.div
@@ -277,29 +205,21 @@ export default function TaxiMapQuestion({
                 transition={{ duration: 2.4, delay: idx * 0.5, repeat: !isAnswered ? Infinity : 0, ease: 'easeInOut' }}
                 style={{
                   width: 44, height: 44, borderRadius: '50%',
-                  background: isWrongSel
-                    ? 'rgba(244,63,94,0.25)'
-                    : isCorrectSel
-                      ? `radial-gradient(circle, ${dest.color}55, ${dest.color}cc)`
-                      : 'rgba(0,0,0,0.65)',
-                  border: `2.5px solid ${isWrongSel ? '#F43F5E' : isCorrectSel ? dest.color : dest.color + '99'}`,
+                  background: 'rgba(0,0,0,0.65)',
+                  border: `2.5px solid ${dest.color}99`,
                   backdropFilter: 'blur(12px)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 20,
-                  boxShadow: [
-                    '0 4px 16px rgba(0,0,0,0.5)',
-                    isCorrectSel ? `0 0 28px ${dest.glow}` : '',
-                    isWrongSel ? '0 0 18px rgba(244,63,94,0.5)' : '',
-                  ].filter(Boolean).join(', '),
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
                   transition: 'all 0.3s',
                 }}
               >
-                {isCorrectSel ? '✅' : isWrongSel ? '❌' : dest.icon}
+                {dest.icon}
               </motion.div>
 
               {/* Letter + Label */}
               <div style={{
-                background: isWrongSel ? '#F43F5E' : dest.color,
+                background: dest.color,
                 borderRadius: 6, padding: '2px 7px',
                 fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 9, color: '#000',
                 boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
@@ -310,13 +230,13 @@ export default function TaxiMapQuestion({
 
               <div style={{
                 background: 'rgba(0,0,0,0.72)',
-                border: `1px solid ${isCorrectSel ? dest.color : isWrongSel ? '#F43F5E' : 'rgba(255,255,255,0.15)'}`,
+                border: '1px solid rgba(255,255,255,0.15)',
                 borderRadius: 6, padding: '3px 8px',
                 fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 9,
-                color: isCorrectSel ? dest.color : isWrongSel ? '#F43F5E' : 'rgba(255,255,255,0.85)',
+                color: 'rgba(255,255,255,0.85)',
                 backdropFilter: 'blur(8px)',
                 whiteSpace: 'nowrap',
-                boxShadow: isCorrectSel ? `0 0 10px ${dest.glow}` : 'none',
+                boxShadow: 'none',
                 transition: 'all 0.3s',
               }}>
                 {dest.label}
@@ -336,27 +256,7 @@ export default function TaxiMapQuestion({
         </div>
       </div>
 
-      {/* Continue */}
-      {isAnswered && isCorrect && (
-        <motion.button
-          className="next-btn-q"
-          onClick={() => onContinue()}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-          style={{ marginTop: 14 }}
-        >
-          Continue <ArrowRight size={18} />
-        </motion.button>
-      )}
-
-      {/* Moving on */}
-      {isAnswered && !isCorrect && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          style={{ textAlign: 'center', color: '#F43F5E', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, marginTop: 12 }}
-        >
-          Moving on...
-        </motion.div>
-      )}
+      {/* Status feedback removed per user request */}
     </div>
   );
 }

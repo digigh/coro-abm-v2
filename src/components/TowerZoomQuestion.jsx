@@ -26,7 +26,6 @@ export default function TowerZoomQuestion({
         <motion.img
           src="/parisian_tower.png"
           alt="Eiffel Tower"
-          animate={isAnswered && isCorrect ? { scale: 1.25, y: -20, filter: 'brightness(1.1) saturate(1.1)' } : {}}
           transition={{ duration: 3, ease: 'easeOut' }}
           style={{
             width: '100%', height: '100%', objectFit: 'cover',
@@ -41,52 +40,7 @@ export default function TowerZoomQuestion({
           pointerEvents: 'none',
         }} />
 
-        {/* Particle Overlay (Sparkles) on correct */}
-        {isAnswered && isCorrect && (
-          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-            {Array.from({ length: 40 }).map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{
-                  opacity: [0, 0.8, 0],
-                  scale: [0, 1.2, 0],
-                  x: [Math.random() * 300 - 150, Math.random() * 300 - 150],
-                  y: [Math.random() * 300 - 150, Math.random() * 300 - 150],
-                }}
-                transition={{
-                  duration: 1.5 + Math.random(),
-                  repeat: Infinity,
-                  delay: Math.random() * 2,
-                }}
-                style={{
-                  position: 'absolute', top: '40%', left: '50%',
-                  width: 4, height: 4, borderRadius: '50%',
-                  background: i % 2 === 0 ? '#FACC15' : '#fff',
-                  boxShadow: '0 0 8px #FACC15',
-                }}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Floating Label */}
-        {isAnswered && isCorrect && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{
-              position: 'absolute', bottom: 20, right: 20,
-              padding: '6px 14px', borderRadius: 12,
-              background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              display: 'flex', alignItems: 'center', gap: 8,
-            }}
-          >
-            <Sparkles size={14} color="#FACC15" />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#fff' }}>LIGHT SHOW ACTIVE</span>
-          </motion.div>
-        )}
+        {/* Success/Failure overlays removed per user request */}
       </div>
 
       {/* Option Cards */}
@@ -95,12 +49,7 @@ export default function TowerZoomQuestion({
           const isSelected = idx === answeredIdx;
           const isCorrectSel = isAnswered && isSelected && isCorrect;
           const isWrongSel = isAnswered && isSelected && !isCorrect;
-          const isDimmed = isAnswered && !isSelected;
-
-          const borderColor = isCorrectSel ? '#FACC15' : isWrongSel ? '#F43F5E' : 'rgba(255,255,255,0.15)';
-          const bgColor = isSelected
-            ? (isCorrectSel ? 'rgba(250,204,21,0.15)' : 'rgba(244,63,94,0.15)')
-            : 'rgba(255,255,255,0.05)';
+          // No dimming - neutral survey mode
 
           return (
             <motion.button
@@ -112,22 +61,22 @@ export default function TowerZoomQuestion({
                 all: 'unset', padding: '16px 12px', borderRadius: 18,
                 background: bgColor, border: `1.5px solid ${borderColor}`,
                 cursor: isAnswered ? 'default' : 'pointer',
-                opacity: isDimmed ? 0.3 : 1, transition: 'all 0.3s',
+                opacity: 1, transition: 'all 0.3s',
                 display: 'flex', alignItems: 'center', gap: 10,
               }}
             >
               <div style={{
                 width: 24, height: 24, borderRadius: 6, flexShrink: 0,
-                background: isCorrectSel ? '#FACC15' : isWrongSel ? '#F43F5E' : 'rgba(255,255,255,0.1)',
+                background: 'rgba(255,255,255,0.1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 12,
-                color: isSelected ? '#000' : '#fff',
+                color: '#fff',
               }}>
                 {String.fromCharCode(65 + idx)}
               </div>
               <span style={{
                 fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 13,
-                color: isCorrectSel ? '#FACC15' : '#fff',
+                color: '#fff',
                 lineHeight: 1.2,
               }}>
                 {opt}
@@ -137,17 +86,7 @@ export default function TowerZoomQuestion({
         })}
       </div>
 
-      {/* Footer */}
-      {isAnswered && isCorrect && (
-        <motion.button
-          className="next-btn-q"
-          onClick={() => onContinue()}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          style={{ marginTop: 16 }}
-        >
-          Explore More <ArrowRight size={18} />
-        </motion.button>
-      )}
+      {/* Footer removed per user request */}
     </div>
   );
 }

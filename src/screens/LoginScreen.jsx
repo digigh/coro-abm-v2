@@ -10,7 +10,7 @@ import { supabase } from '../supabaseClient';
 import './screens.css';
 
 const HowToPlayModal = ({ onComplete }) => {
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(20);
 
   useEffect(() => {
     if (timeLeft === 0) {
@@ -52,7 +52,7 @@ const HowToPlayModal = ({ onComplete }) => {
                 <h2 className="mini-title">The Guidelines ✦</h2>
                 <div className="mini-rule">
                   <Zap size={14} className="mini-icon" />
-                  <span>Answer each question within 10 seconds.</span>
+                  <span>Answer each question within 15 seconds.</span>
                 </div>
                 <div className="mini-rule">
                   <Zap size={14} className="mini-icon" />
@@ -86,7 +86,7 @@ const HowToPlayModal = ({ onComplete }) => {
             className="mini-progress-fill"
             initial={{ width: "100%" }}
             animate={{ width: "0%" }}
-            transition={{ duration: 10, ease: "linear" }}
+            transition={{ duration: 20, ease: "linear" }}
           />
         </div>
       </motion.div>
@@ -94,7 +94,7 @@ const HowToPlayModal = ({ onComplete }) => {
   );
 };
 
-export default function LoginScreen({ currentSet, onNext, onAlreadyPlayed }) {
+export default function LoginScreen({ currentSet, onNext, onAlreadyPlayed, onBack }) {
   const [empId, setEmpId] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -184,6 +184,30 @@ export default function LoginScreen({ currentSet, onNext, onAlreadyPlayed }) {
       <AnimatePresence>
         {showHowToPlay && <HowToPlayModal onComplete={handleModalComplete} />}
       </AnimatePresence>
+
+      {/* BACK BUTTON */}
+      {onBack && (
+        <button 
+          onClick={onBack}
+          style={{
+            position: 'absolute',
+            top: 24,
+            left: 24,
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            color: '#fff',
+            padding: '8px 16px',
+            borderRadius: '20px',
+            fontFamily: 'var(--font-head)',
+            fontSize: '12px',
+            cursor: 'pointer',
+            zIndex: 100,
+            backdropFilter: 'blur(5px)'
+          }}
+        >
+          ← BACK
+        </button>
+      )}
 
       <motion.div 
         className="glass input-card"

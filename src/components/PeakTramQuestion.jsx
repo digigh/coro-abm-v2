@@ -54,7 +54,7 @@ export default function PeakTramQuestion({
 
           {/* THE TRAM (Red Retro Style) */}
           <motion.div
-            animate={isAnswered && isCorrect ? { x: [0, 800] } : {}}
+            animate={{}}
             transition={{ duration: 3.5, ease: 'easeInOut' }}
             style={{
               position: 'absolute', top: '50%', left: 100,
@@ -119,10 +119,7 @@ export default function PeakTramQuestion({
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {question.options.map((opt, idx) => {
           const isSelected = idx === answeredIdx;
-          const isCorrectSel = isAnswered && isSelected && isCorrect;
-          const isDimmed = isAnswered && !isSelected;
-
-          const borderColor = isCorrectSel ? '#F43F5E' : (isSelected ? '#F43F5E' : 'rgba(255,255,255,0.1)'); // Red accent
+          // No feedback variables - neutral survey mode
           
           return (
             <motion.button
@@ -132,12 +129,12 @@ export default function PeakTramQuestion({
               whileTap={!isAnswered ? { scale: 0.98 } : {}}
               style={{
                 all: 'unset', padding: '16px 12px', borderRadius: 20,
-                background: isSelected ? 'rgba(185, 28, 28, 0.1)' : 'rgba(255,255,255,0.05)',
-                border: `1.5px solid ${isSelected ? '#b91c1c' : 'rgba(255,255,255,0.1)'}`,
+                background: 'rgba(255,255,255,0.05)',
+                border: '1.5px solid rgba(255,255,255,0.1)',
                 cursor: isAnswered ? 'default' : 'pointer',
-                opacity: isDimmed ? 0.4 : 1, transition: 'all 0.3s',
+                opacity: 1, transition: 'all 0.3s',
                 textAlign: 'center', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 13,
-                color: isSelected ? '#ef4444' : '#fff'
+                color: '#fff'
               }}
             >
               <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>OPTION {String.fromCharCode(65+idx)}</div>
@@ -147,40 +144,7 @@ export default function PeakTramQuestion({
         })}
       </div>
 
-      {/* Feedback Overlay */}
-      <AnimatePresence>
-        {isAnswered && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={{
-              marginTop: 18, padding: '14px 20px', borderRadius: 16,
-              background: isCorrect ? 'rgba(34,197,94,0.1)' : 'rgba(244,63,94,0.1)',
-              border: `1px solid ${isCorrect ? '#22c55e' : '#f43f5e'}`,
-              display: 'flex', alignItems: 'center', gap: 12
-            }}
-          >
-            <div style={{ fontSize: 24 }}>{isCorrect ? '🚠' : '❌'}</div>
-            <div>
-              <div style={{ fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 14, color: isCorrect ? '#22c55e' : '#f43f5e' }}>
-                {isCorrect ? 'BRILLIANT ASCENT!' : 'STEEP CHALLENGE!'}
-              </div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
-                {isCorrect ? 'The Peak Tram has been climbing since 1888.' : 'The correct term is simply "The Peak".'}
-              </div>
-            </div>
-            {isCorrect && (
-              <motion.button
-                onClick={() => onContinue()}
-                whileHover={{ scale: 1.1 }}
-                style={{ marginLeft: 'auto', background: '#22c55e', border: 'none', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#000' }}
-              >
-                <ArrowRight size={20} />
-              </motion.button>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Feedback removed per user request */}
     </div>
   );
 }

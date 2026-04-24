@@ -78,9 +78,7 @@ export default function BubbleQuestion({
         {question.options && question.options.map((opt, idx) => {
           const meta = BUBBLE_META[idx];
           const isSelected = idx === answeredIdx;
-          const isWrongSel = isAnswered && isSelected && !isCorrect;
-          const isCorrectSel = isAnswered && isSelected && isCorrect;
-          const isDimmed = isAnswered && !isSelected;
+          // No feedback variables - neutral survey mode
 
           return (
             <Bubble
@@ -89,9 +87,6 @@ export default function BubbleQuestion({
               meta={meta}
               opt={opt}
               isSelected={isSelected}
-              isCorrectSel={isCorrectSel}
-              isWrongSel={isWrongSel}
-              isDimmed={isDimmed}
               isAnswered={isAnswered}
               onClick={() => !isAnswered && onAnswer(idx)}
             />
@@ -107,53 +102,23 @@ export default function BubbleQuestion({
         ✦ Tap the matching currency bubble
       </div>
 
-      {/* Continue button — only on correct */}
-      {isAnswered && isCorrect && (
-        <motion.button
-          className="next-btn-q"
-          onClick={() => onContinue()}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-          style={{ marginTop: 14 }}
-        >
-          Continue <ArrowRight size={18} />
-        </motion.button>
-      )}
-
-      {/* Moving on — only on wrong */}
-      {isAnswered && !isCorrect && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          style={{ textAlign: 'center', color: '#F43F5E', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, marginTop: 12 }}
-        >
-          Moving on...
-        </motion.div>
-      )}
     </div>
   );
 }
 
-function Bubble({ idx, meta, opt, isSelected, isCorrectSel, isWrongSel, isDimmed, isAnswered, onClick }) {
+function Bubble({ idx, meta, opt, isSelected, isAnswered, onClick }) {
   // Bob animation: each bubble has a slightly different phase
   const bobDelay = idx * 0.4;
   const bobDuration = 2.2 + idx * 0.3;
 
-  const borderColor = isCorrectSel
-    ? meta.color
-    : isWrongSel
-      ? '#F43F5E'
-      : meta.color + '55';
-
-  const glowColor = isCorrectSel
-    ? meta.glow
-    : isWrongSel
-      ? 'rgba(244,63,94,0.45)'
-      : 'transparent';
+  const borderColor = meta.color + '55';
+  const glowColor = 'transparent';
 
   return (
     <motion.div
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, position: 'relative' }}
       initial={{ opacity: 0, scale: 0.7 }}
-      animate={{ opacity: isDimmed ? 0.3 : 1, scale: isDimmed ? 0.92 : 1 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: idx * 0.07, type: 'spring', stiffness: 260, damping: 20 }}
     >
       {/* Floating currency symbols around bubble */}
@@ -166,7 +131,7 @@ function Bubble({ idx, meta, opt, isSelected, isCorrectSel, isWrongSel, isDimmed
             fontSize: pos.size,
             fontFamily: 'var(--font-mono)',
             color: meta.color,
-            opacity: isDimmed ? 0.1 : 0.5,
+            opacity: 0.5,
             pointerEvents: 'none',
             zIndex: 5,
             fontWeight: 700,
@@ -191,13 +156,7 @@ function Bubble({ idx, meta, opt, isSelected, isCorrectSel, isWrongSel, isDimmed
         onClick={onClick}
         animate={!isAnswered ? {
           y: [0, -10, 0, -5, 0],
-        } : isWrongSel ? {
-          x: [0, -10, 10, -8, 8, 0],
-          scale: [1, 0.95, 0.95, 1],
-        } : isCorrectSel ? {
-          scale: [1, 1.12, 1.05, 1.08],
-          y: [0, -12, -8, -10],
-        } : { scale: 0.92 }}
+        } : { scale: 1.05 }}
         transition={!isAnswered ? {
           duration: bobDuration,
           delay: bobDelay,
@@ -236,7 +195,7 @@ function Bubble({ idx, meta, opt, isSelected, isCorrectSel, isWrongSel, isDimmed
             style={{
               position: 'absolute', inset: 0, width: '100%', height: '100%',
               objectFit: 'cover',
-              filter: isDimmed ? 'grayscale(0.8) brightness(0.5)' : 'brightness(0.85)',
+              filter: 'brightness(0.85)',
               borderRadius: '50%',
             }}
           />
@@ -270,46 +229,19 @@ function Bubble({ idx, meta, opt, isSelected, isCorrectSel, isWrongSel, isDimmed
           pointerEvents: 'none',
         }} />
 
-        {/* Correct / Wrong overlay */}
-        {isCorrectSel && (
-          <motion.div
-            initial={{ scale: 0 }} animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 14 }}
-            style={{
-              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'rgba(34,211,163,0.25)', borderRadius: '50%', fontSize: 40,
-            }}
-          >
-            ✅
-          </motion.div>
-        )}
-        {isWrongSel && (
-          <motion.div
-            initial={{ scale: 0 }} animate={{ scale: 1 }}
-            style={{
-              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'rgba(244,63,94,0.25)', borderRadius: '50%', fontSize: 40,
-            }}
-          >
-            ❌
-          </motion.div>
-        )}
+        {/* Result icons removed per user request */}
       </motion.div>
 
       {/* Letter badge below bubble */}
       <motion.div
         style={{
           width: 30, height: 30, borderRadius: '50%',
-          background: isCorrectSel
-            ? meta.color
-            : isWrongSel
-              ? '#F43F5E'
-              : `linear-gradient(135deg, ${meta.color}33, ${meta.color}88)`,
-          border: `1.5px solid ${isAnswered && isSelected ? (isCorrectSel ? meta.color : '#F43F5E') : meta.color + '66'}`,
+          background: `linear-gradient(135deg, ${meta.color}33, ${meta.color}88)`,
+          border: `1.5px solid ${meta.color}66`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 13,
-          color: isCorrectSel ? '#000' : isWrongSel ? '#fff' : meta.color,
-          boxShadow: isCorrectSel ? `0 0 14px ${meta.glow}` : isWrongSel ? '0 0 14px rgba(244,63,94,0.5)' : 'none',
+          color: meta.color,
+          boxShadow: 'none',
           marginTop: -2,
         }}
       >
@@ -319,9 +251,8 @@ function Bubble({ idx, meta, opt, isSelected, isCorrectSel, isWrongSel, isDimmed
       {/* Option label text */}
       <div style={{
         fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 11,
-        color: isDimmed ? 'rgba(255,255,255,0.25)' : isCorrectSel ? meta.color : isWrongSel ? '#F43F5E' : 'rgba(255,255,255,0.75)',
+        color: 'rgba(255,255,255,0.75)',
         textAlign: 'center', maxWidth: 120, lineHeight: 1.3,
-        transition: 'color 0.3s',
       }}>
         {opt}
       </div>

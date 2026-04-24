@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Rocket, Flame } from 'lucide-react';
+import { Rocket, Flame, Star } from 'lucide-react';
 import './WelcomeScreen.css';
 import venetianImg from '../assets/destinations/venetian.png';
 import kowloonImg from '../assets/destinations/kowloon.png';
@@ -123,10 +123,12 @@ const WelcomeScreen = ({ onNext }) => {
               </div>
               <div className="mini-stat">
                 <span className="val">2 Groups</span>
-                <span className="lbl">Cycle</span>
+                <span className="lbl">Batches</span>
               </div>
               <div className="mini-stat">
-                <span className="val">4★+</span>
+                <span className="val" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  5 Star <Star size={16} fill="var(--accent)" stroke="none" />
+                </span>
                 <span className="lbl">Hospitality</span>
               </div>
             </div>

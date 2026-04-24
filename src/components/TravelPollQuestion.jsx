@@ -75,7 +75,7 @@ export default function TravelPollQuestion({ question, isSubmitted, onSubmit }) 
         <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.2, repeat: Infinity }}>🗺️</motion.span>
         {chosen === null
           ? 'Select your ride — watch it journey to Macao!'
-          : arrived ? `${vehicle.label} arrived in Macao! 🇲🇴` : `${vehicle.label} is on its way…`}
+          : `${vehicle.label} is on its way…`}
       </div>
 
       {/* ════════════════════════════════════════════
@@ -140,7 +140,7 @@ export default function TravelPollQuestion({ question, isSubmitted, onSubmit }) 
 
           {/* Macao destination */}
           <div style={{ position: 'absolute', right: 12, bottom: 10, fontSize: 16, filter: 'drop-shadow(0 0 10px rgba(232,121,249,0.7))' }}>
-            {arrived && chosen === 3 ? '🎆' : '🏯'}
+            🏯
           </div>
           <div style={{ position: 'absolute', right: 34, bottom: 13, fontFamily: 'var(--font-mono)', fontSize: 7, color: 'rgba(255,255,255,0.3)' }}>MACAO</div>
 
@@ -241,7 +241,7 @@ export default function TravelPollQuestion({ question, isSubmitted, onSubmit }) 
           {/* HK + Macao icons */}
           <div style={{ position: 'absolute', left: 12, bottom: 12, fontSize: 14, filter: 'drop-shadow(0 0 8px rgba(250,204,21,0.5))' }}>🏙️</div>
           <div style={{ position: 'absolute', right: 12, bottom: 12, fontSize: 16, filter: 'drop-shadow(0 0 10px rgba(250,204,21,0.6))' }}>
-            {arrived && (chosen === 1 || chosen === 2) ? '🎆' : '🏯'}
+            🏯
           </div>
 
           {/* Route dotted line */}
@@ -381,7 +381,7 @@ export default function TravelPollQuestion({ question, isSubmitted, onSubmit }) 
           {/* HK + Macao icons */}
           <div style={{ position: 'absolute', left: 12, bottom: 10, fontSize: 14, filter: 'drop-shadow(0 0 8px rgba(34,211,238,0.6))' }}>🏙️</div>
           <div style={{ position: 'absolute', right: 12, bottom: 10, fontSize: 16, filter: 'drop-shadow(0 0 10px rgba(34,211,238,0.7))' }}>
-            {arrived && chosen === 0 ? '🎆' : '🏯'}
+            🏯
           </div>
 
           {/* Dotted sea route */}
@@ -449,7 +449,7 @@ export default function TravelPollQuestion({ question, isSubmitted, onSubmit }) 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9, marginBottom: 14 }}>
         {VEHICLES.map((v) => {
           const isChosen = chosen === v.idx;
-          const isDimmed = chosen !== null && !isChosen;
+          // No dimming - neutral survey mode
           const zoneColors = { sky: '#e879f9', road: '#FACC15', water: '#22D3EE' };
           const zoneLabel = { sky: '✈ Air', road: '🛣 Road', water: '🌊 Sea' };
 
@@ -459,7 +459,7 @@ export default function TravelPollQuestion({ question, isSubmitted, onSubmit }) 
               onClick={() => handlePick(v.idx)}
               disabled={chosen !== null}
               initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: isDimmed ? 0.2 : 1, y: 0, scale: isChosen ? 1.03 : 1 }}
+              animate={{ opacity: 1, y: 0, scale: isChosen ? 1.03 : 1 }}
               transition={{ delay: v.idx * 0.07, type: 'spring', stiffness: 260, damping: 22 }}
               whileHover={chosen === null ? { y: -5, scale: 1.06 } : {}}
               whileTap={chosen === null ? { scale: 0.94 } : {}}
@@ -535,12 +535,6 @@ export default function TravelPollQuestion({ question, isSubmitted, onSubmit }) 
                   marginBottom: 3, transition: 'color 0.3s',
                 }}>
                   {v.label}
-                  {isChosen && (
-                    <motion.span
-                      initial={{ scale: 0 }} animate={{ scale: 1 }}
-                      style={{ marginLeft: 6, fontSize: 13 }}
-                    >✓</motion.span>
-                  )}
                 </div>
                 <div style={{
                   fontFamily: 'var(--font-body)', fontSize: 9, textAlign: 'center',
@@ -555,40 +549,7 @@ export default function TravelPollQuestion({ question, isSubmitted, onSubmit }) 
       </div>
 
       {/* Arrival card */}
-      <AnimatePresence>
-        {arrived && vehicle && (
-          <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.94 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px',
-              background: `linear-gradient(135deg, ${vehicle.accent}14, rgba(5,10,25,0.96))`,
-              border: `1.5px solid ${vehicle.accent}55`,
-              borderRadius: 16,
-              boxShadow: `0 0 32px ${vehicle.glow}, 0 12px 40px rgba(0,0,0,0.6)`,
-            }}
-          >
-            <motion.span
-              animate={{ rotate: [0, 12, -8, 5, 0] }}
-              transition={{ duration: 0.7, repeat: 2 }}
-              style={{ fontSize: 32, flexShrink: 0 }}
-            >{vehicle.icon}</motion.span>
-            <div>
-              <div style={{
-                fontFamily: 'var(--font-head)', fontWeight: 900, fontSize: 16,
-                background: `linear-gradient(90deg, ${vehicle.accent}, #fff)`,
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                marginBottom: 3,
-              }}>
-                Arrived in Macao! 🇲🇴
-              </div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
-                {vehicle.hint}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Feedback removed per user request */}
     </div>
   );
 }

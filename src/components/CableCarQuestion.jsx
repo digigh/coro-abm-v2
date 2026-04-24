@@ -15,9 +15,8 @@ export default function CableCarQuestion({
   const optionColors = (idx) => {
     if (!isAnswered) return { border: 'rgba(255,255,255,0.4)', bg: 'rgba(10,15,50,0.75)', text: '#fff' };
     const isSelected = idx === answeredIdx;
-    if (isSelected && isCorrect) return { border: '#22D3A3', bg: 'rgba(34,211,163,0.2)', text: '#22D3A3' };
-    if (isSelected && !isCorrect) return { border: '#F43F5E', bg: 'rgba(244,63,94,0.15)', text: '#F43F5E' };
-    return { border: 'rgba(255,255,255,0.12)', bg: 'rgba(10,15,50,0.35)', text: 'rgba(255,255,255,0.3)' };
+    if (isSelected) return { border: '#fbbf24', bg: 'rgba(250,204,21,0.15)', text: '#fbbf24' };
+    return { border: 'rgba(255,255,255,0.12)', bg: 'rgba(10,15,50,0.35)', text: 'rgba(255,255,255,0.6)' };
   };
 
   return (
@@ -126,23 +125,13 @@ export default function CableCarQuestion({
                   style={{
                     background: c.bg, border: `2px solid ${c.border}`,
                     borderRadius: 10, padding: '8px 10px', cursor: isAnswered ? 'default' : 'pointer',
-                    backdropFilter: 'blur(12px)', boxShadow: isSelected && isCorrect
-                      ? '0 0 18px rgba(34,211,163,0.5)'
-                      : isSelected && !isCorrect
-                        ? '0 0 18px rgba(244,63,94,0.4)'
-                        : '0 4px 16px rgba(0,0,0,0.4)',
+                    backdropFilter: 'blur(12px)', boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
                     fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 12,
                     color: c.text, minWidth: 60, textAlign: 'center',
                     transition: 'all 0.3s',
                     position: 'relative',
                   }}
                 >
-                  {isSelected && isCorrect && (
-                    <span style={{ position: 'absolute', top: -10, right: -10, fontSize: 18 }}>✅</span>
-                  )}
-                  {isSelected && !isCorrect && (
-                    <span style={{ position: 'absolute', top: -10, right: -10, fontSize: 18 }}>❌</span>
-                  )}
                   {opt}
                 </motion.button>
               </div>
@@ -151,26 +140,7 @@ export default function CableCarQuestion({
         </div>
       </div>
 
-      {/* Continue button — only if correct */}
-      {isAnswered && isCorrect && (
-        <motion.button
-          className="next-btn-q"
-          onClick={() => onContinue()}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          style={{ marginTop: 16 }}
-        >
-          Continue <ArrowRight size={18} />
-        </motion.button>
-      )}
-      {/* Wrong answer: show brief message only */}
-      {isAnswered && !isCorrect && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          style={{ marginTop: 12, textAlign: 'center', color: '#F43F5E', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600 }}
-        >
-          Moving on...
-        </motion.div>
-      )}
+
     </div>
   );
 }

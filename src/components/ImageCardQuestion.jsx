@@ -31,19 +31,7 @@ export default function ImageCardQuestion({
         {question.options && question.options.map((opt, idx) => {
           const meta = OPTION_META[idx];
           const isSelected = idx === answeredIdx;
-          const isCorrectSel = isSelected && isCorrect;
-          const isWrongSel = isSelected && !isCorrect;
-          const isDimmed = isAnswered && !isSelected;
-
-          const borderColor = isCorrectSel ? meta.accent
-            : isWrongSel ? '#F43F5E'
-            : 'rgba(255,255,255,0.08)';
-
-          const shadow = isCorrectSel
-            ? `0 0 28px ${meta.accent}55, 0 8px 24px rgba(0,0,0,0.5)`
-            : isWrongSel
-              ? '0 0 20px rgba(244,63,94,0.4), 0 8px 24px rgba(0,0,0,0.5)'
-              : '0 6px 20px rgba(0,0,0,0.45)';
+          // No feedback variables - neutral survey mode
 
           return (
             <motion.button
@@ -52,9 +40,9 @@ export default function ImageCardQuestion({
               disabled={isAnswered}
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{
-                opacity: isDimmed ? 0.32 : 1,
+                opacity: 1,
                 y: 0,
-                scale: isCorrectSel ? 1.03 : isDimmed ? 0.96 : 1,
+                scale: 1,
               }}
               transition={{ delay: idx * 0.07, type: 'spring', stiffness: 260, damping: 22 }}
               whileHover={!isAnswered ? { y: -5, scale: 1.04 } : {}}
@@ -66,8 +54,8 @@ export default function ImageCardQuestion({
                 alignItems: 'stretch',
                 borderRadius: 16,
                 overflow: 'hidden',
-                border: `1.5px solid ${borderColor}`,
-                boxShadow: shadow,
+                border: `1.5px solid rgba(255,255,255,0.08)`,
+                boxShadow: '0 6px 20px rgba(0,0,0,0.45)',
                 background: meta.bg,
                 cursor: isAnswered ? 'default' : 'pointer',
                 transition: 'border-color 0.3s, box-shadow 0.3s',
@@ -91,9 +79,7 @@ export default function ImageCardQuestion({
                     objectFit: 'cover',
                     objectPosition: 'center',
                     display: 'block',
-                    filter: isDimmed
-                      ? 'grayscale(0.6) brightness(0.45)'
-                      : 'brightness(0.92)',
+                    filter: 'brightness(0.92)',
                     transition: 'filter 0.35s',
                   }}
                 />
@@ -104,24 +90,7 @@ export default function ImageCardQuestion({
                   pointerEvents: 'none',
                 }} />
 
-                {/* Correct / Wrong badge */}
-                {isAnswered && isSelected && (
-                  <motion.div
-                    initial={{ scale: 0, rotate: -20 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: 'spring', stiffness: 340, damping: 16 }}
-                    style={{
-                      position: 'absolute', top: 8, right: 8,
-                      width: 28, height: 28, borderRadius: '50%',
-                      background: isCorrectSel ? '#22D3A3' : '#F43F5E',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 14, fontWeight: 800, color: '#fff',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                    }}
-                  >
-                    {isCorrectSel ? '✓' : '✕'}
-                  </motion.div>
-                )}
+                {/* Badges removed per user request */}
               </div>
 
               {/* ── Label bar */}
@@ -131,7 +100,7 @@ export default function ImageCardQuestion({
                 justifyContent: 'center',   // ← CENTER aligned
                 gap: 8,
                 padding: '9px 12px',
-                background: isCorrectSel
+                background: isSelected
                   ? `linear-gradient(90deg, ${meta.accent}22, transparent)`
                   : 'rgba(0,0,0,0.55)',
                 borderTop: `1px solid rgba(255,255,255,0.07)`,
@@ -139,7 +108,7 @@ export default function ImageCardQuestion({
                 {/* Letter chip */}
                 <div style={{
                   width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-                  background: isWrongSel ? '#F43F5E' : meta.accent,
+                  background: meta.accent,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 11,
                   color: '#000',
@@ -152,13 +121,9 @@ export default function ImageCardQuestion({
                   fontFamily: 'var(--font-body)',
                   fontWeight: 600,
                   fontSize: 12,
-                  color: isCorrectSel ? meta.accent
-                    : isWrongSel ? '#F43F5E'
-                    : isDimmed ? 'rgba(255,255,255,0.3)'
-                    : 'rgba(255,255,255,0.9)',
+                  color: 'rgba(255,255,255,0.9)',
                   lineHeight: 1.35,
                   textAlign: 'center',
-                  transition: 'color 0.3s',
                 }}>
                   {opt}
                 </span>
@@ -168,30 +133,7 @@ export default function ImageCardQuestion({
         })}
       </div>
 
-      {/* Continue */}
-      {isAnswered && isCorrect && (
-        <motion.button
-          className="next-btn-q"
-          onClick={() => onContinue()}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          style={{ marginTop: 14 }}
-        >
-          Continue <ArrowRight size={18} />
-        </motion.button>
-      )}
-
-      {/* Moving on */}
-      {isAnswered && !isCorrect && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          style={{
-            textAlign: 'center', color: '#F43F5E',
-            fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, marginTop: 10
-          }}
-        >
-          Moving on...
-        </motion.div>
-      )}
+      {/* Footer removed per user request */}
     </div>
   );
 }

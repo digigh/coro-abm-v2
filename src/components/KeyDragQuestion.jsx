@@ -85,13 +85,11 @@ export default function KeyDragQuestion({
       </div>
       <div className="q-text" style={{ marginBottom: 8 }}>{question.question_text}</div>
 
-      {/* Hint */}
       <div style={{
-        fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--muted2)',
-        marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6,
+        fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--muted2)',
+        marginBottom: 16, textAlign: 'center'
       }}>
-        <span>🗝️</span>
-        {isAnswered ? (isCorrect ? '🎉 Correct! The Venetian is inspired by Venice!' : 'Not quite. Moving on...') : 'Drag the key to the matching city'}
+        {isAnswered ? 'Choice recorded. Moving on...' : 'Drag the key to the matching city'}
       </div>
 
       {/* ── Main Drag Arena ─────────────────────────────── */}
@@ -181,15 +179,7 @@ export default function KeyDragQuestion({
             </motion.div>
           )}
 
-          {/* After answer: show result in center */}
-          {isAnswered && (
-            <motion.div
-              initial={{ scale: 0 }} animate={{ scale: 1 }}
-              style={{ position: 'absolute', fontSize: 30, zIndex: 20 }}
-            >
-              {isCorrect ? '🎉' : '💨'}
-            </motion.div>
-          )}
+          {/* Result Emojis Removed per User Request */}
         </div>
 
         {/* RIGHT: Venice (C) — CORRECT ANSWER */}
@@ -204,24 +194,7 @@ export default function KeyDragQuestion({
       </div>
 
       {/* Continue / Moving on */}
-      {isAnswered && isCorrect && (
-        <motion.button
-          className="next-btn-q"
-          onClick={() => onContinue()}
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-          style={{ marginTop: 16 }}
-        >
-          Continue <ArrowRight size={18} />
-        </motion.button>
-      )}
-      {isAnswered && !isCorrect && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          style={{ textAlign: 'center', color: '#F43F5E', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, marginTop: 14 }}
-        >
-          Moving on...
-        </motion.div>
-      )}
+      {/* Feedback removed per user request */}
     </div>
   );
 }
@@ -230,31 +203,25 @@ export default function KeyDragQuestion({
 function CitySlot({ idx, dir, selectedDir, isAnswered, isCorrect, dragDir, launched }) {
   const meta = DIRECTIONS[idx];
   const isSelected = isAnswered && selectedDir === dir;
-  const isCorrectSel = isSelected && isCorrect;
-  const isWrongSel = isSelected && !isCorrect;
   const isHovered = dragDir === dir;
-  const isDimmed = isAnswered && !isSelected;
+  // No feedback variables - neutral survey mode
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.85 }}
       animate={{
-        opacity: isDimmed ? 0.28 : 1,
-        scale: isCorrectSel ? 1.06 : isDimmed ? 0.9 : 1,
+        opacity: 1,
+        scale: 1,
       }}
       transition={{ delay: idx * 0.08, type: 'spring', stiffness: 260, damping: 22 }}
       style={{
-        borderRadius: 14,
-        overflow: 'hidden',
+        width: '100%',
+        aspectRatio: '1 / 1.15',
+        borderRadius: 20,
         border: `2px solid ${
-          isCorrectSel ? meta.color
-          : isWrongSel ? '#F43F5E'
-          : isHovered ? meta.color + 'cc'
-          : 'rgba(255,255,255,0.1)'
+          isHovered ? meta.color + 'cc' : 'rgba(255,255,255,0.1)'
         }`,
-        boxShadow: isCorrectSel
-          ? `0 0 28px ${meta.glow}`
-          : isHovered
+        boxShadow: isHovered
             ? `0 0 16px ${meta.glow}`
             : '0 4px 16px rgba(0,0,0,0.4)',
         background: '#0d1520',
@@ -272,7 +239,7 @@ function CitySlot({ idx, dir, selectedDir, isAnswered, isCorrect, dragDir, launc
           alt={meta.label}
           style={{
             width: '100%', height: '100%', objectFit: 'cover',
-            filter: isDimmed ? 'grayscale(0.6) brightness(0.5)' : isHovered ? 'brightness(1.1)' : 'brightness(0.9)',
+            filter: isHovered ? 'brightness(1.1)' : 'brightness(0.9)',
             transition: 'filter 0.3s',
           }}
         />
@@ -293,14 +260,14 @@ function CitySlot({ idx, dir, selectedDir, isAnswered, isCorrect, dragDir, launc
       <div style={{
         display: 'flex', alignItems: 'center', gap: 6,
         padding: '6px 8px',
-        background: isCorrectSel
+        background: isSelected
           ? `linear-gradient(90deg, ${meta.color}33, transparent)`
           : 'rgba(0,0,0,0.6)',
         borderTop: `1px solid rgba(255,255,255,0.07)`,
       }}>
         <div style={{
           width: 20, height: 20, borderRadius: 6, flexShrink: 0,
-          background: isWrongSel ? '#F43F5E' : meta.color,
+          background: meta.color,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 10, color: '#000',
         }}>
@@ -308,13 +275,11 @@ function CitySlot({ idx, dir, selectedDir, isAnswered, isCorrect, dragDir, launc
         </div>
         <span style={{
           fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 11,
-          color: isCorrectSel ? meta.color : isWrongSel ? '#F43F5E' : 'rgba(255,255,255,0.85)',
+          color: 'rgba(255,255,255,0.85)',
           transition: 'color 0.3s',
         }}>
           {meta.label}
         </span>
-        {isCorrectSel && <span style={{ marginLeft: 'auto', fontSize: 13 }}>✅</span>}
-        {isWrongSel && <span style={{ marginLeft: 'auto', fontSize: 13 }}>❌</span>}
       </div>
     </motion.div>
   );

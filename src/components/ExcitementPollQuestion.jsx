@@ -167,7 +167,6 @@ export default function ExcitementPollQuestion({
                   color: OPTION_META[idx].accent, display: 'flex', alignItems: 'center', gap: 5,
                 }}
               >
-                <span style={{ fontWeight: 800 }}>✓</span>
                 <span style={{ opacity: 0.8 }}>{question.options[idx]}</span>
               </motion.div>
             ))}
@@ -246,25 +245,7 @@ export default function ExcitementPollQuestion({
                 position: 'relative',
               }}
             >
-              {/* Selected checkmark burst */}
-              <AnimatePresence>
-                {isOn && (
-                  <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 16 }}
-                    style={{
-                      position: 'absolute', top: 8, right: 8, zIndex: 10,
-                      width: 26, height: 26, borderRadius: '50%',
-                      background: meta.accent,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 14, fontWeight: 900, color: '#000',
-                      boxShadow: `0 0 12px ${meta.accent}`,
-                    }}
-                  >✓</motion.div>
-                )}
-              </AnimatePresence>
+              {/* Selected state indicator removed per user request */}
 
               {/* Image */}
               <div style={{ height: 90, overflow: 'hidden', position: 'relative' }}>

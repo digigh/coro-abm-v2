@@ -52,6 +52,20 @@
   justify-content: center;
 }
 
+.brand-logo-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-logo-img {
+  height: 80px; /* Enlarged base size for desktop */
+  position: relative;
+  z-index: 10;
+  object-fit: contain;
+}
+
 /* --- Hero Section --- */
 .welcome-hero {
   position: relative;
@@ -431,11 +445,18 @@
 .gallery-container {
   padding-left: max(24px, calc((100% - 1100px) / 2));
   overflow-x: auto;
+  overflow-y: visible; /* Allow vertical zoom lift */
   scrollbar-width: none;
 }
 .gallery-container::-webkit-scrollbar { display: none; }
 
-.gallery-track { display: flex; gap: 24px; padding-right: 24px; }
+.gallery-track { 
+  display: flex; 
+  gap: 24px; 
+  padding-right: 24px; 
+  padding-top: 40px; /* Space for the hover zoom/lift effect */
+  padding-bottom: 40px;
+}
 
 .destination-card {
   min-width: 320px;
@@ -641,12 +662,17 @@
 
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
-  .welcome-header { padding: 40px 24px; }
-  .welcome-logo { height: 60px; }
-  .welcome-title { font-size: 3rem; }
-  .hero-content { margin-top: 40px; }
-  .btn-main { width: 100%; padding: 18px; }
+  .welcome-header { padding: 24px; }
+  .main-logo-img { height: 56px; } /* Slightly enlarged for mobile too */
+  .welcome-title { font-size: 2.25rem; letter-spacing: -0.02em; }
+  .hero-content { margin-top: 160px; } /* Even more space for logo */
+  .hero-badge { margin-bottom: 1.5rem; }
+  .welcome-tagline { margin: 1.5rem auto; font-size: 0.95rem; padding: 0 10px; }
+  .btn-main { width: 100%; padding: 18px; font-size: 16px; }
   .bento-grid { grid-template-columns: 1fr; }
   .bento-item.large, .bento-item.medium { grid-column: span 1; }
-  .destination-card { min-width: 280px; height: 380px; }
+  .destination-card { min-width: 260px; height: 340px; }
+  
+  /* Fix for card zoom clipping */
+  .gallery-track { padding-top: 60px; padding-bottom: 60px; }
 }

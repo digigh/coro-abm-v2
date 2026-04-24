@@ -17,7 +17,7 @@ import BungeeJumpQuestion from '../components/BungeeJumpQuestion';
 import HistoryScrollQuestion from '../components/HistoryScrollQuestion';
 import './screens.css';
 
-const QUESTION_TIME = 10; // seconds per question
+const QUESTION_TIME = 15; // seconds per question
 
 export default function QuizScreen({ employee, currentSet, initialProgress, onNext }) {
   const [questions, setQuestions] = useState([]);
@@ -113,7 +113,7 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
     const interval = setInterval(() => {
       const now = Date.now();
       const elapsed = now - currentQuestionStartTime;
-      const remaining = Math.ceil((10000 - elapsed) / 1000);
+      const remaining = Math.ceil((15000 - elapsed) / 1000);
       
       if (remaining <= 0) {
         // Time's up — auto advance with no score
@@ -145,21 +145,15 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
 
     const q = questions[currentIndex];
     const correct = idx === q.correct_answer_index;
-    setIsCorrect(correct);
-
     if (correct) {
       setScore(s => s + 1);
-      setShowParty(true);
-      // Auto-advance after 2s party
-      setTimeout(() => {
-        setShowParty(false);
-        handleNextQuestion(idx);
-      }, 2000);
-    } else {
-      // Wrong: auto-advance after 1.5s
-      setTimeout(() => handleNextQuestion(idx), 1500);
     }
-  }, [answeredIdx, questions, currentIndex]);
+
+    // Near-instant transition (100ms) to allow the click state to register but avoid lag
+    setTimeout(() => {
+      handleNextQuestion(idx);
+    }, 100);
+  }, [answeredIdx, questions, currentIndex, score]);
 
   // ─── Advance to next question ─────────────────────────────────────
   const handleNextQuestion = async (answeredIdxOverride) => {
@@ -378,7 +372,7 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
         </div>
 
         {/* Party Popper */}
-        {showParty && <PartyPopper />}
+        {/* Party Popper Removed per User Request */}
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -407,7 +401,7 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
   return (
     <div className="quiz-wrap">
       {/* Party Popper Overlay */}
-      {showParty && <PartyPopper />}
+      {/* Party Popper Removed per User Request */}
 
       {/* HUD */}
       <div className="progress-hud">
@@ -436,21 +430,7 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
             : <FloatOptions q={q} answeredIdx={answeredIdx} isCorrect={isCorrect} onClick={handleOptionClick} />
           }
 
-          {/* Feedback — only for correct answer */}
-          {isAnswered && isCorrect && (
-            <motion.div
-              className="feedback-block correct"
-              initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-            >
-              <div className="fb-row">
-                <div style={{ fontSize: 28 }}>🎉</div>
-                <div>
-                  <div className="fb-title correct">Brilliant! You got it!</div>
-                  <div className="fb-fact">{q.fact_text}</div>
-                </div>
-              </div>
-            </motion.div>
-          )}
+          {/* Feedback Block Removed per User Request */}
         </motion.div>
       </AnimatePresence>
     </div>
@@ -489,11 +469,7 @@ function FloatOptions({ q, answeredIdx, isCorrect, onClick }) {
       {q.options && q.options.map((opt, idx) => {
         const isSelected = answeredIdx === idx;
         let cls = 'float-card';
-        if (isAnswered) {
-          if (isSelected && isCorrect) cls += ' sel-correct';
-          else if (isSelected && !isCorrect) cls += ' sel-wrong';
-          else cls += ' dimmed';
-        }
+        // No feedback classes - neutral survey mode
         return (
           <div key={idx} className={cls} onClick={() => onClick(idx)}>
             <span style={{ fontSize: 28, marginBottom: 6, display: 'block' }}>{emojis[idx % emojis.length]}</span>
@@ -514,11 +490,7 @@ function SlideOptions({ q, answeredIdx, isCorrect, onClick }) {
       {q.options && q.options.map((opt, idx) => {
         const isSelected = answeredIdx === idx;
         let cls = 'slider-opt';
-        if (isAnswered) {
-          if (isSelected && isCorrect) cls += ' sl-correct';
-          else if (isSelected && !isCorrect) cls += ' sl-wrong';
-          else cls += ' sl-dim';
-        }
+        // No feedback classes - neutral survey mode
         return (
           <div key={idx} className={cls} onClick={() => onClick(idx)}>
             <div className="so-num">{String.fromCharCode(65 + idx)}</div>
@@ -530,125 +502,4 @@ function SlideOptions({ q, answeredIdx, isCorrect, onClick }) {
   );
 }
 
-// ─── Win Overlay (replaces party popper) ────────────────────────────
-const PRAISE_WORDS = [
-  'BRILLIANT!', 'AWESOME!', 'AMAZING!', 'SUPERB!',
-  'PERFECT!', 'FANTASTIC!', 'EXCELLENT!', 'NAILED IT!',
-  'GENIUS!', 'OUTSTANDING!', 'LEGENDARY!', 'ON FIRE! 🔥',
-];
-
-function PartyPopper() {
-  const COLORS = ['#FACC15', '#2DD4BF', '#e879f9', '#60a5fa', '#fb923c', '#22D3A3', '#F43F5E', '#818cf8'];
-  const praise = PRAISE_WORDS[Math.floor(Math.random() * PRAISE_WORDS.length)];
-  const ribbons = Array.from({ length: 30 }, (_, i) => ({
-    left: 2 + Math.random() * 96,
-    delay: Math.random() * 0.7,
-    duration: 1.2 + Math.random() * 0.8,
-    color: COLORS[i % COLORS.length],
-    width: 5 + Math.random() * 6,
-    height: 12 + Math.random() * 14,
-    rotate: Math.random() * 360,
-    rotateEnd: Math.random() * 720 - 360,
-    xDrift: (Math.random() - 0.5) * 80,
-  }));
-
-  return (
-    <div style={{
-      position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden',
-    }}>
-      <style>{`
-        @keyframes ribbon-fall {
-          0%   { top: -5%; opacity: 1; transform: rotate(var(--r0)) translateX(0px); }
-          100% { top: 110%; opacity: 0; transform: rotate(var(--rE)) translateX(var(--xd)); }
-        }
-        @keyframes ring-pulse {
-          0%   { transform: translate(-50%,-50%) scale(0.2); opacity: 0.9; }
-          100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
-        }
-        @keyframes badge-pop {
-          0%   { transform: translate(-50%,-50%) scale(0); opacity: 0; }
-          50%  { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
-          75%  { transform: translate(-50%,-50%) scale(0.96); opacity: 1; }
-          85%  { transform: translate(-50%,-50%) scale(1.04); opacity: 1; }
-          100% { transform: translate(-50%,-50%) scale(1); opacity: 0; }
-        }
-        @keyframes shine-sweep {
-          0%   { left: -60%; }
-          100% { left: 130%; }
-        }
-      `}</style>
-
-      {/* Cascading Ribbons */}
-      {ribbons.map((r, i) => (
-        <div key={i} style={{
-          position: 'absolute',
-          left: `${r.left}%`,
-          top: '-5%',
-          width: r.width,
-          height: r.height,
-          borderRadius: 2,
-          background: r.color,
-          opacity: 0,
-          '--r0': `${r.rotate}deg`,
-          '--rE': `${r.rotateEnd}deg`,
-          '--xd': `${r.xDrift}px`,
-          animation: `ribbon-fall ${r.duration}s ${r.delay}s cubic-bezier(0.25,0.46,0.45,0.94) forwards`,
-        }} />
-      ))}
-
-      {/* Radial glow rings from center */}
-      {[0, 0.18, 0.35].map((delay, i) => (
-        <div key={i} style={{
-          position: 'absolute',
-          top: '50%', left: '50%',
-          width: 120, height: 120,
-          borderRadius: '50%',
-          border: `3px solid ${i === 0 ? '#FACC15' : i === 1 ? '#2DD4BF' : '#e879f9'}`,
-          boxShadow: `0 0 20px ${i === 0 ? '#FACC15' : i === 1 ? '#2DD4BF' : '#e879f9'}`,
-          animation: `ring-pulse 0.9s ${delay}s cubic-bezier(0.2,0.8,0.4,1) forwards`,
-          opacity: 0,
-        }} />
-      ))}
-
-      {/* Central badge */}
-      <div style={{
-        position: 'absolute', top: '46%', left: '50%',
-        animation: 'badge-pop 2s 0.1s ease forwards',
-        opacity: 0,
-        transform: 'translate(-50%,-50%)',
-        background: 'linear-gradient(135deg, #0a1a2a, #0d2236)',
-        border: '2px solid rgba(250,204,21,0.7)',
-        borderRadius: 20,
-        padding: '18px 32px',
-        boxShadow: '0 0 60px rgba(250,204,21,0.4), 0 0 120px rgba(45,212,191,0.15), 0 20px 60px rgba(0,0,0,0.8)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-      }}>
-        {/* Shine sweep */}
-        <div style={{
-          position: 'absolute', top: 0, left: '-60%',
-          width: '40%', height: '100%',
-          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)',
-          animation: 'shine-sweep 1.4s 0.3s ease forwards',
-          pointerEvents: 'none',
-        }} />
-        <div style={{
-          fontFamily: 'var(--font-head)', fontWeight: 900, fontSize: 42, lineHeight: 1,
-          color: '#FACC15',
-          textShadow: '0 0 20px rgba(250,204,21,0.8), 0 0 40px rgba(250,204,21,0.4)',
-        }}>✓</div>
-        <div style={{
-          fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 22,
-          background: 'linear-gradient(90deg, #FACC15, #2DD4BF, #e879f9)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          letterSpacing: 3,
-        }}>{praise}</div>
-        <div style={{
-          fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.5)',
-          letterSpacing: 1,
-        }}>Keep it up 🔥</div>
-      </div>
-    </div>
-  );
-}
+// PartyPopper component removed per user request — no feedback in survey mode
