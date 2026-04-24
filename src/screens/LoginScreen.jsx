@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserCircle, AlertCircle, Clock } from 'lucide-react';
+import { UserCircle, AlertCircle, Clock, Zap } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import './screens.css';
 
@@ -36,19 +36,44 @@ const HowToPlayModal = ({ onComplete }) => {
         </div>
 
         <div className="modal-body-mini">
-          <h2 className="mini-title">The Guidelines ✦</h2>
-          <div className="mini-rule">
-            <Zap size={14} className="mini-icon" />
-            <span>10 seconds per question. No retreats.</span>
-          </div>
-          <div className="mini-rule">
-            <Zap size={14} className="mini-icon" />
-            <span>Auto-advancement enforced. Precision is key.</span>
-          </div>
-          <div className="mini-rule">
-            <Zap size={14} className="mini-icon" />
-            <span>Mid-game exit saves progress automatically.</span>
-          </div>
+          <AnimatePresence mode="wait">
+            {timeLeft > 3 ? (
+              <motion.div
+                key="rules"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <h2 className="mini-title">The Guidelines ✦</h2>
+                <div className="mini-rule">
+                  <Zap size={14} className="mini-icon" />
+                  <span>Answer each question within 10 seconds.</span>
+                </div>
+                <div className="mini-rule">
+                  <Zap size={14} className="mini-icon" />
+                  <span>The quiz moves forward automatically—no backtracking.</span>
+                </div>
+                <div className="mini-rule">
+                  <Zap size={14} className="mini-icon" />
+                  <span>Unanswered questions will be marked as 0 points.</span>
+                </div>
+                <div className="mini-rule">
+                  <Zap size={14} className="mini-icon" />
+                  <span>If you exit, your progress will resume where you left off.</span>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="alert"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1.1, opacity: 1 }}
+                className="get-ready-container"
+              >
+                <h1 className="get-ready-glow">GET READY TO PLAY!</h1>
+                <p className="get-ready-sub">Your journey begins in {timeLeft}...</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="mini-progress-track">
