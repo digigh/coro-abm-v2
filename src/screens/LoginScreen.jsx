@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserCircle, AlertCircle, Clock, Zap } from 'lucide-react';
+import { 
+  UserCircle, 
+  AlertCircle, 
+  Clock, 
+  Zap 
+} from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import './screens.css';
 

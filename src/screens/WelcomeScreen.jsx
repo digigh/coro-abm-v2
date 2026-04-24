@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Rocket, Flame, Zap } from 'lucide-react';
+import { Rocket, Flame } from 'lucide-react';
 import './WelcomeScreen.css';
 import venetianImg from '../assets/destinations/venetian.png';
 import kowloonImg from '../assets/destinations/kowloon.png';
