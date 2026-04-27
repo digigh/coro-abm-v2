@@ -127,6 +127,14 @@ const WelcomeScreen = ({ onNext }) => {
     }
   };
 
+  const scrollToSection = (e, sectionId) => {
+    e.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className={`welcome-screen ${isTransitioning ? 'pointer-events-none' : ''}`}>
       <AnimatePresence>
@@ -163,8 +171,8 @@ const WelcomeScreen = ({ onNext }) => {
             <img src="/coro-logo-original.svg" alt="Coromandel Logo" />
           </div>
           <nav className="nav-links glass-strip-nav">
-            <a href="#">OVERVIEW</a>
-            <a href="#">EXPERIENCES</a>
+            <a href="#overview" onClick={(e) => scrollToSection(e, 'overview')}>OVERVIEW</a>
+            <a href="#experiences" onClick={(e) => scrollToSection(e, 'experiences')}>EXPERIENCES</a>
           </nav>
           <div className="nav-actions">
             <div className="lang-selector">
@@ -261,7 +269,7 @@ const WelcomeScreen = ({ onNext }) => {
       </svg>
 
       {/* --- PROFESSIONAL SUMMIT SECTION --- */}
-      <section className="professional-summit-section">
+      <section id="overview" className="professional-summit-section">
         <div className="summit-intro">
           <h2>SUMMIT OVERVIEW</h2>
           <p>An elite, high-performance schedule meticulously crafted for Coromandel leadership.</p>
@@ -303,7 +311,7 @@ const WelcomeScreen = ({ onNext }) => {
           </div>
         </div>
 
-        <div className="summit-features-grid">
+        <div id="experiences" className="summit-features-grid">
           {/* Left Column: Mini Carousel */}
           <div className="mini-carousel-container">
             <AnimatePresence mode="wait">
