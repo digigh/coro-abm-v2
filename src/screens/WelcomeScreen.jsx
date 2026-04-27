@@ -12,7 +12,7 @@ const carouselData = [
     id: 'hk',
     image: kowloonImg,
     leftTitle: "ABM 2026 SUMMIT",
-    leftSubtitle: "Macau & Hong Kong",
+    leftSubtitle: "Macao & Hong Kong",
     leftDesc: "8–14 May 2026. A journey of strategic growth, innovation, and extraordinary experiences.",
     rightTitle: "ACCELERATE YOUR PATH —",
     rightSubtitle: "we'll handle the logistics.",
@@ -418,7 +418,7 @@ const WelcomeScreen = ({ onNext }) => {
             <span className="s-num">2</span>
             <div className="s-details">
               <span className="s-title">Cities</span>
-              <span className="s-sub">HongKong + Macau</span>
+              <span className="s-sub">HongKong + Macao</span>
             </div>
           </div>
           <div className="s-line"></div>
