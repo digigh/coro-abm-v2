@@ -14,9 +14,9 @@ const carouselData = [
     leftTitle: "ABM 2026 SUMMIT",
     leftSubtitle: "Macau & Hong Kong",
     leftDesc: "8–14 May 2026. A journey of strategic growth, innovation, and extraordinary experiences.",
-    rightTitle: "Choose your path to acceleration –",
+    rightTitle: "ACCELERATE YOUR PATH —",
     rightSubtitle: "we'll handle the logistics.",
-    rightDesc: "Our dedicated summit team ensures every detail is tailored for your success, whether you're networking or exploring."
+    rightDesc: "so you can focus on networking and exploration."
   },
   {
     id: 'venetian',
@@ -78,9 +78,9 @@ const textVariants = {
 
 const GifTransition = () => (
   <div className="gif-transition-overlay" key="gif-overlay">
-    <img 
-      src="/stars_anime.gif" 
-      className="gif-asset" 
+    <img
+      src="/stars_anime.gif"
+      className="gif-asset"
       alt="Transitioning..."
     />
   </div>
@@ -139,7 +139,7 @@ const CountdownTimer = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="cool-timer-container"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
@@ -209,7 +209,7 @@ const WelcomeScreen = ({ onNext }) => {
     setIsTransitioning(true);
     setTimeout(() => {
       onNext();
-    }, 5000); 
+    }, 5000);
   };
 
   const handleDotClick = (index) => {
@@ -273,19 +273,13 @@ const WelcomeScreen = ({ onNext }) => {
             <a href="#experiences" onClick={(e) => scrollToSection(e, 'experiences')}>EXPERIENCES</a>
           </nav>
           <div className="nav-actions">
-            <div className="lang-selector">
-              Eng
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '4px' }}>
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </div>
             <button className="menu-btn" onClick={handleMenuToggle}><Menu size={24} /></button>
           </div>
 
           {/* Mobile Dropdown Menu */}
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <motion.div 
+              <motion.div
                 className="mobile-dropdown-menu"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -305,7 +299,7 @@ const WelcomeScreen = ({ onNext }) => {
             <span className="line-one">CONSOLIDATE</span><br />
             <span className="line-two">TO <span className="shimmer-text">ACCELERATE</span></span>
           </h1>
-          <motion.div 
+          <motion.div
             className="hero-destination-subtitle"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -316,28 +310,28 @@ const WelcomeScreen = ({ onNext }) => {
             <span className="dest-text">MACAO</span>
           </motion.div>
           <CountdownTimer />
-        </div>
 
-        {/* Action Button positioned lower */}
-        <div className="hero-action-container">
-          <button className="btn-initiate" onClick={handleRegister}>
-            <span className="edge-light"></span>
-            <div className="btn-inner">
-              <span className="btn-text">INITIATE THE EXPERIENCE</span>
-              <div className="btn-arrow">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                  <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
+          {/* Action Button automatically positioned relative to content */}
+          <div className="hero-action-container-relative">
+            <button className="btn-initiate" onClick={handleRegister}>
+              <span className="edge-light"></span>
+              <div className="btn-inner">
+                <span className="btn-text">INITIATE THE EXPERIENCE</span>
+                <div className="btn-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
+          </div>
         </div>
 
         {/* --- DYNAMIC OVERLAY TEXT BLOCKS --- */}
         <div className="hero-panels-wrapper">
           <AnimatePresence mode="wait">
-            <motion.div 
+            <motion.div
               className="hero-bottom-left"
               key={`left-${page}`}
               variants={textVariants}
@@ -355,7 +349,7 @@ const WelcomeScreen = ({ onNext }) => {
           </AnimatePresence>
 
           <AnimatePresence mode="wait">
-            <motion.div 
+            <motion.div
               className="hero-bottom-right-text"
               key={`right-${page}`}
               variants={textVariants}
@@ -376,8 +370,8 @@ const WelcomeScreen = ({ onNext }) => {
         {/* --- CAROUSEL POINTERS --- */}
         <div className="carousel-dots">
           {carouselData.map((_, idx) => (
-            <button 
-              key={idx} 
+            <button
+              key={idx}
               className={`dot ${idx === currentImageIndex ? 'active' : ''}`}
               onClick={() => handleDotClick(idx)}
             />
@@ -399,7 +393,7 @@ const WelcomeScreen = ({ onNext }) => {
           <h2>SUMMIT OVERVIEW</h2>
           <p>An elite, high-performance schedule meticulously crafted for Coromandel leadership.</p>
         </div>
-        
+
         <div className="summit-stats-row">
           <div className="s-stat">
             <span className="s-num">5</span>

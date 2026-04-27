@@ -195,7 +195,7 @@
 /* --- GIANT TYPOGRAPHY --- */
 .hero-center-text {
   position: absolute;
-  top: 38%;
+  top: 42%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
@@ -488,14 +488,11 @@
 }
 
 /* --- BUTTON STYLING & POSITIONING --- */
-.hero-action-container {
-  position: absolute;
-  top: 58%; /* Positioned below the main text */
-  left: 0;
-  right: 0;
+.hero-action-container-relative {
+  margin-top: 60px; /* Increased to prevent any overlapping with the timer */
   display: flex;
   justify-content: center;
-  z-index: 10;
+  pointer-events: auto; /* Because parent hero-center-text is pointer-events: none */
 }
 
 .btn-initiate {
@@ -861,10 +858,9 @@
     right: 16px;
   }
   
-  .hero-center-text { top: 30%; } /* Pushed higher up */
+  .hero-center-text { top: 40%; } /* Shifted slightly up from exact center to give bottom panels space */
   .hero-center-text h1 { font-size: 2.5rem; line-height: 1.1; }
   
-  .hero-action-container { top: 48%; bottom: auto; }
   .btn-initiate { padding: 14px 24px; font-size: 0.95rem; }
   
   /* Make panel mobile friendly - stack them automatically with Flexbox! */
