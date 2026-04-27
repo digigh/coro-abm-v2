@@ -395,6 +395,11 @@ const WelcomeScreen = ({ onNext }) => {
 
       {/* --- PROFESSIONAL SUMMIT SECTION --- */}
       <section id="overview" className="professional-summit-section">
+        {/* Elegant Mesh, Illustration & Shine Background */}
+        <div className="summit-bg-gradient"></div>
+        <div className="summit-illustration-overlay"></div>
+        <div className="summit-shine-sweep"></div>
+
         <div className="summit-intro">
           <h2>SUMMIT OVERVIEW</h2>
           <p>An elite, high-performance schedule meticulously crafted for Coromandel leadership.</p>
