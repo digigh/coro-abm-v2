@@ -107,7 +107,7 @@ const AnimatedNumber = ({ value }) => (
 
 const CountdownTimer = () => {
   const calculateTimeLeft = () => {
-    const difference = +new Date('2026-05-01T00:00:00') - +new Date();
+    const difference = +new Date('2026-05-08T00:00:00') - +new Date();
     let timeLeft = {};
 
     if (difference > 0) {
@@ -296,7 +296,7 @@ const WelcomeScreen = ({ onNext }) => {
         {/* --- GIANT TYPOGRAPHY & CTA --- */}
         <div className="hero-center-text">
           <h1 className="modern-shimmer-title">
-            <span className="line-one">CONSOLIDATE</span><br />
+            <span className="line-one shimmer-text">CONSOLIDATE</span>
             <span className="line-two">TO <span className="shimmer-text">ACCELERATE</span></span>
           </h1>
           <motion.div
@@ -305,9 +305,9 @@ const WelcomeScreen = ({ onNext }) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           >
-            <span className="dest-text">HONGKONG</span>
+            <span className="dest-text shimmer-text">HONGKONG</span>
             <span className="dest-dot"></span>
-            <span className="dest-text">MACAO</span>
+            <span className="dest-text shimmer-text">MACAO</span>
           </motion.div>
           <CountdownTimer />
 
