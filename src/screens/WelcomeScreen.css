@@ -33,10 +33,14 @@
 .hero-section {
   position: relative;
   width: 100%;
-  height: 100vh; /* Full viewport height */
-  min-height: 850px; /* Increased to ensure enough vertical room for stacked elements */
+  min-height: 100vh;
   background: #000;
   overflow: hidden; /* Contains the image */
+  display: flex;
+  flex-direction: column;
+  padding-top: 140px; /* Space for top nav */
+  padding-bottom: 60px;
+  box-sizing: border-box;
 }
 
 .carousel-container {
@@ -194,14 +198,12 @@
 
 /* --- GIANT TYPOGRAPHY --- */
 .hero-center-text {
-  position: absolute;
-  top: 42%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   width: 100%;
   text-align: center;
   z-index: 5;
   pointer-events: none;
+  margin: auto 0; /* Naturally centers vertically within flex container */
 }
 
 .modern-shimmer-title {
@@ -386,15 +388,16 @@
 
 /* --- DYNAMIC OVERLAY TEXT BLOCKS --- */
 .hero-panels-wrapper {
-  position: absolute;
-  bottom: 50px;
-  left: 50px;
-  right: 50px;
+  position: relative;
+  width: 100%;
+  padding: 0 50px;
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: flex-end; /* Keeps them bottom-aligned */
   z-index: 5;
   pointer-events: none; /* Let clicks pass through empty space between them */
+  margin-top: 30px; /* Minimum space from center text */
 }
 
 .hero-bottom-left, .hero-bottom-right-text {
@@ -835,13 +838,9 @@
   .summit-features-grid { grid-template-columns: 1fr; gap: 40px; }
   .mini-carousel-container { height: 400px; }
   
-  .hero-section { height: 100vh; min-height: 800px; }
-  
   /* Restructure panels for tablet using flex wrapper */
   .hero-panels-wrapper {
-    bottom: 60px;
-    left: 40px;
-    right: 40px;
+    padding: 0 40px;
   }
   .hero-bottom-left, .hero-bottom-right-text { 
     max-width: calc(50% - 20px);
@@ -858,19 +857,16 @@
     right: 16px;
   }
   
-  .hero-center-text { top: 40%; } /* Shifted slightly up from exact center to give bottom panels space */
   .hero-center-text h1 { font-size: 2.5rem; line-height: 1.1; }
   
   .btn-initiate { padding: 14px 24px; font-size: 0.95rem; }
   
   /* Make panel mobile friendly - stack them automatically with Flexbox! */
   .hero-panels-wrapper {
-    bottom: 60px; /* Pushed down to the bottom */
-    left: 16px;
-    right: 16px;
+    padding: 0 16px;
     flex-direction: column;
     align-items: stretch;
-    gap: 10px; /* Tighter gap */
+    gap: 15px; /* Tighter gap */
   }
   
   .hero-bottom-left, .hero-bottom-right-text {
