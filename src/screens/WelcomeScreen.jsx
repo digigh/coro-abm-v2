@@ -88,8 +88,101 @@ const GifTransition = () => (
 
 const galaImages = [venetianImg, victoriaPeakImg, kowloonImg];
 
+const AnimatedNumber = ({ value }) => (
+  <div className="animated-number-wrapper">
+    <AnimatePresence mode="popLayout">
+      <motion.span
+        key={value}
+        initial={{ y: 20, opacity: 0, scale: 0.8 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: -20, opacity: 0, scale: 0.8 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        className="timer-value"
+      >
+        {value}
+      </motion.span>
+    </AnimatePresence>
+  </div>
+);
+
+const CountdownTimer = () => {
+  const calculateTimeLeft = () => {
+    const difference = +new Date('2026-05-01T00:00:00') - +new Date();
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    } else {
+      timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+
+    return timeLeft;
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  });
+
+  const formatNumber = (num) => {
+    return num.toString().padStart(2, '0');
+  };
+
+  return (
+    <motion.div 
+      className="cool-timer-container"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+    >
+      <div className="timer-block">
+        <div className="timer-block-bg"></div>
+        <div className="timer-block-inner">
+          <AnimatedNumber value={formatNumber(timeLeft.days)} />
+          <span className="timer-label">DAYS</span>
+        </div>
+      </div>
+      <span className="timer-separator">:</span>
+      <div className="timer-block">
+        <div className="timer-block-bg"></div>
+        <div className="timer-block-inner">
+          <AnimatedNumber value={formatNumber(timeLeft.hours)} />
+          <span className="timer-label">HOURS</span>
+        </div>
+      </div>
+      <span className="timer-separator">:</span>
+      <div className="timer-block">
+        <div className="timer-block-bg"></div>
+        <div className="timer-block-inner">
+          <AnimatedNumber value={formatNumber(timeLeft.minutes)} />
+          <span className="timer-label">MINUTES</span>
+        </div>
+      </div>
+      <span className="timer-separator">:</span>
+      <div className="timer-block">
+        <div className="timer-block-bg"></div>
+        <div className="timer-block-inner">
+          <AnimatedNumber value={formatNumber(timeLeft.seconds)} />
+          <span className="timer-label">SECONDS</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const WelcomeScreen = ({ onNext }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [[page, direction], setPage] = useState([0, 1]);
   const [[galaPage, galaDirection], setGalaPage] = useState([0, 1]);
 
@@ -127,12 +220,17 @@ const WelcomeScreen = ({ onNext }) => {
     }
   };
 
+  const handleMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   const scrollToSection = (e, sectionId) => {
     e.preventDefault();
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -167,7 +265,7 @@ const WelcomeScreen = ({ onNext }) => {
 
         {/* --- TOP NAVIGATION --- */}
         <header className="top-nav">
-          <div className="nav-logo">
+          <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ cursor: 'pointer' }}>
             <img src="/coro-logo-original.svg" alt="Coromandel Logo" />
           </div>
           <nav className="nav-links glass-strip-nav">
@@ -181,8 +279,24 @@ const WelcomeScreen = ({ onNext }) => {
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </div>
-            <button className="menu-btn"><Menu size={24} /></button>
+            <button className="menu-btn" onClick={handleMenuToggle}><Menu size={24} /></button>
           </div>
+
+          {/* Mobile Dropdown Menu */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div 
+                className="mobile-dropdown-menu"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <a href="#overview" onClick={(e) => scrollToSection(e, 'overview')}>OVERVIEW</a>
+                <a href="#experiences" onClick={(e) => scrollToSection(e, 'experiences')}>EXPERIENCES</a>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </header>
 
         {/* --- GIANT TYPOGRAPHY & CTA --- */}
@@ -191,6 +305,17 @@ const WelcomeScreen = ({ onNext }) => {
             <span className="line-one">CONSOLIDATE</span><br />
             <span className="line-two">TO <span className="shimmer-text">ACCELERATE</span></span>
           </h1>
+          <motion.div 
+            className="hero-destination-subtitle"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          >
+            <span className="dest-text">HONGKONG</span>
+            <span className="dest-dot"></span>
+            <span className="dest-text">MACAO</span>
+          </motion.div>
+          <CountdownTimer />
         </div>
 
         {/* Action Button positioned lower */}
