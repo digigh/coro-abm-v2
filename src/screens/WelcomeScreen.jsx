@@ -107,7 +107,7 @@ const AnimatedNumber = ({ value }) => (
 
 const CountdownTimer = () => {
   const calculateTimeLeft = () => {
-    const difference = +new Date('2026-05-08T00:00:00') - +new Date();
+    const difference = +new Date('2026-05-11T00:00:00') - +new Date();
     let timeLeft = {};
 
     if (difference > 0) {
@@ -266,7 +266,7 @@ const WelcomeScreen = ({ onNext }) => {
         {/* --- TOP NAVIGATION --- */}
         <header className="top-nav">
           <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ cursor: 'pointer' }}>
-            <img src="/coro-logo-original.svg" alt="Coromandel Logo" />
+            <img src="/final_main_logo.png" alt="Coromandel Logo" />
           </div>
           <nav className="nav-links glass-strip-nav">
             <a href="#overview" onClick={(e) => scrollToSection(e, 'overview')}>OVERVIEW</a>
@@ -295,10 +295,16 @@ const WelcomeScreen = ({ onNext }) => {
 
         {/* --- GIANT TYPOGRAPHY & CTA --- */}
         <div className="hero-center-text">
-          <h1 className="modern-shimmer-title">
-            <span className="line-one shimmer-text">CONSOLIDATE</span>
-            <span className="line-two">TO <span className="shimmer-text">ACCELERATE</span></span>
-          </h1>
+          <div className="hero-title-container">
+            <div className="tree-unit-container">
+              <img src="/tree-logo.png" className="hero-side-logo" alt="Growth Tree Logo" />
+              <div className="logo-shine-overlay" />
+            </div>
+            <h1 className="modern-shimmer-title">
+              <span className="line-one shimmer-text">CONSOLIDATE</span>
+              <span className="line-two">TO <span className="shimmer-text">ACCELERATE</span></span>
+            </h1>
+          </div>
           <motion.div
             className="hero-destination-subtitle"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -316,7 +322,7 @@ const WelcomeScreen = ({ onNext }) => {
             <button className="btn-initiate" onClick={handleRegister}>
               <span className="edge-light"></span>
               <div className="btn-inner">
-                <span className="btn-text">INITIATE THE EXPERIENCE</span>
+                <span className="btn-text">Participate Now and Win</span>
                 <div className="btn-arrow">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
