@@ -418,7 +418,7 @@ const WelcomeScreen = ({ onNext }) => {
             <span className="s-num">2</span>
             <div className="s-details">
               <span className="s-title">Cities</span>
-              <span className="s-sub">HK + Macau</span>
+              <span className="s-sub">HongKong + Macau</span>
             </div>
           </div>
           <div className="s-line"></div>
