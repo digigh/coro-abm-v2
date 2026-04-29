@@ -108,7 +108,7 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
 
   // ─── 10-second countdown (Server Time Bounds) ─────────────────────
   useEffect(() => {
-    if (!timerActive || answeredIdx !== null) return;
+    if (!timerActive || answeredIdx !== null || currentIndex >= questions.length) return;
 
     const interval = setInterval(() => {
       const now = Date.now();
@@ -138,7 +138,7 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
 
   // ─── Handle option selection ──────────────────────────────────────
   const handleOptionClick = useCallback((idx) => {
-    if (answeredIdx !== null) return;
+    if (answeredIdx !== null || currentIndex >= questions.length) return;
 
     setTimerActive(false);
     setAnsweredIdx(idx);
@@ -157,9 +157,13 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
 
   // ─── Advance to next question ─────────────────────────────────────
   const handleNextQuestion = async (answeredIdxOverride) => {
+    if (currentIndex >= questions.length) return;
+    
     const effectiveIdx = answeredIdxOverride ?? answeredIdx;
     const q = questions[currentIndex];
-    const wasCorrect = effectiveIdx === q?.correct_answer_index;
+    if (!q) return;
+
+    const wasCorrect = effectiveIdx === q.correct_answer_index;
     const finalScore = wasCorrect ? score + 1 : score;
 
     let answeredText = null;
@@ -273,10 +277,25 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
     }
   };
 
+  useEffect(() => {
+    if (!loading && questions.length > 0 && currentIndex >= questions.length) {
+      const endTime = Date.now();
+      onNext(score, endTime - quizStartTime);
+    }
+  }, [loading, questions, currentIndex, score, quizStartTime, onNext]);
+
   if (loading || questions.length === 0) {
     return (
       <div style={{ color: 'white', fontFamily: 'var(--font-head)', textAlign: 'center' }}>
         Loading Questions...
+      </div>
+    );
+  }
+
+  if (currentIndex >= questions.length) {
+    return (
+      <div style={{ color: 'white', fontFamily: 'var(--font-head)', textAlign: 'center' }}>
+        Finalizing results...
       </div>
     );
   }
