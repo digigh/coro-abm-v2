@@ -51,6 +51,9 @@ export default function TowerZoomQuestion({
           const isWrongSel = isAnswered && isSelected && !isCorrect;
           // No dimming - neutral survey mode
 
+          const bgColor = isSelected ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)';
+          const borderColor = isSelected ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.1)';
+
           return (
             <motion.button
               key={idx}
