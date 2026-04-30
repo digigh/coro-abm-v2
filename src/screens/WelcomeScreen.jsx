@@ -322,7 +322,7 @@ const WelcomeScreen = ({ onNext }) => {
             <button className="btn-initiate" onClick={handleRegister}>
               <span className="edge-light"></span>
               <div className="btn-inner">
-                <span className="btn-text">Participate Now and Win</span>
+                <span className="btn-text">Level Up to Round 2</span>
                 <div className="btn-arrow">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
