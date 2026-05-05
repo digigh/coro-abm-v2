@@ -17,7 +17,7 @@ export default function KeyDragQuestion({
   question, answeredIdx, isAnswered, isCorrect, onAnswer, onContinue
 }) {
   const [dragDir, setDragDir] = useState(null); // which direction key is being dragged toward
-  const [launched, setLaunched] = useState(false); // gondola launched on correct!
+  const [launched, setLaunched] = useState(false); // gondola launched on selection
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const constraintsRef = useRef(null);
@@ -69,8 +69,7 @@ export default function KeyDragQuestion({
     animate(x, snapX, { type: 'spring', stiffness: 300, damping: 20 });
     animate(y, snapY, { type: 'spring', stiffness: 300, damping: 20 });
 
-    const isRightAnswer = idx === question.correct_answer_index;
-    if (isRightAnswer) setLaunched(true);
+    setLaunched(true);
 
     onAnswer(idx);
   };

@@ -76,9 +76,9 @@ export default function BubbleQuestion({
         padding: '0 4px',
       }}>
         {question.options && question.options.map((opt, idx) => {
-          const meta = BUBBLE_META[idx];
+          // Use metadata from the question if available, otherwise fall back to default
+          const meta = (question.option_metadata && question.option_metadata[idx]) || BUBBLE_META[idx] || BUBBLE_META[0];
           const isSelected = idx === answeredIdx;
-          // No feedback variables - neutral survey mode
 
           return (
             <Bubble

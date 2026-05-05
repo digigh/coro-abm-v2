@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { QUESTION_VISUALS } from '../constants/QuestionMetadata';
 
 const OPTION_META = [
   { img: '/opt_tea.png',    bg: 'linear-gradient(160deg, #0d2e12 0%, #1a4a20 100%)', accent: '#4ade80',  label: 'A' },
@@ -29,10 +30,11 @@ export default function ImageCardQuestion({
         gap: 10,
       }}>
         {question.options && question.options.map((opt, idx) => {
-          const meta = OPTION_META[idx];
+          // Use metadata from local constants, then from database, then default fallback
+          const localMeta = QUESTION_VISUALS[question.id] ? QUESTION_VISUALS[question.id][idx] : null;
+          const meta = localMeta || (question.option_metadata && question.option_metadata[idx]) || OPTION_META[idx] || OPTION_META[0];
           const isSelected = idx === answeredIdx;
-          // No feedback variables - neutral survey mode
-
+          
           return (
             <motion.button
               key={idx}
@@ -43,6 +45,7 @@ export default function ImageCardQuestion({
                 opacity: 1,
                 y: 0,
                 scale: 1,
+                borderColor: isSelected ? meta.accent : 'rgba(255,255,255,0.08)',
               }}
               transition={{ delay: idx * 0.07, type: 'spring', stiffness: 260, damping: 22 }}
               whileHover={!isAnswered ? { y: -5, scale: 1.04 } : {}}
@@ -55,7 +58,7 @@ export default function ImageCardQuestion({
                 borderRadius: 16,
                 overflow: 'hidden',
                 border: `1.5px solid rgba(255,255,255,0.08)`,
-                boxShadow: '0 6px 20px rgba(0,0,0,0.45)',
+                boxShadow: isSelected ? `0 0 20px ${meta.accent}33` : '0 6px 20px rgba(0,0,0,0.45)',
                 background: meta.bg,
                 cursor: isAnswered ? 'default' : 'pointer',
                 transition: 'border-color 0.3s, box-shadow 0.3s',
@@ -79,7 +82,7 @@ export default function ImageCardQuestion({
                     objectFit: 'cover',
                     objectPosition: 'center',
                     display: 'block',
-                    filter: 'brightness(0.92)',
+                    filter: isAnswered && !isSelected ? 'brightness(0.5) grayscale(0.5)' : 'brightness(0.92)',
                     transition: 'filter 0.35s',
                   }}
                 />
@@ -89,8 +92,6 @@ export default function ImageCardQuestion({
                   background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)',
                   pointerEvents: 'none',
                 }} />
-
-                {/* Badges removed per user request */}
               </div>
 
               {/* ── Label bar */}
@@ -101,7 +102,7 @@ export default function ImageCardQuestion({
                 gap: 8,
                 padding: '9px 12px',
                 background: isSelected
-                  ? `linear-gradient(90deg, ${meta.accent}22, transparent)`
+                  ? `linear-gradient(90deg, ${meta.accent}44, transparent)`
                   : 'rgba(0,0,0,0.55)',
                 borderTop: `1px solid rgba(255,255,255,0.07)`,
               }}>
@@ -113,7 +114,7 @@ export default function ImageCardQuestion({
                   fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 11,
                   color: '#000',
                 }}>
-                  {meta.label}
+                  {meta.label || String.fromCharCode(65 + idx)}
                 </div>
 
                 {/* Option text — centered, wraps nicely */}

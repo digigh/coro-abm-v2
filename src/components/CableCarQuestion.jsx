@@ -15,7 +15,7 @@ export default function CableCarQuestion({
   const optionColors = (idx) => {
     if (!isAnswered) return { border: 'rgba(255,255,255,0.4)', bg: 'rgba(10,15,50,0.75)', text: '#fff' };
     const isSelected = idx === answeredIdx;
-    if (isSelected) return { border: '#fbbf24', bg: 'rgba(250,204,21,0.15)', text: '#fbbf24' };
+    if (isSelected) return { border: 'var(--gold)', bg: 'rgba(250,204,21,0.15)', text: 'var(--gold)' };
     return { border: 'rgba(255,255,255,0.12)', bg: 'rgba(10,15,50,0.35)', text: 'rgba(255,255,255,0.6)' };
   };
 

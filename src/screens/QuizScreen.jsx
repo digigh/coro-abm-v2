@@ -15,6 +15,8 @@ import TowerZoomQuestion from '../components/TowerZoomQuestion';
 import PeakTramQuestion from '../components/PeakTramQuestion';
 import BungeeJumpQuestion from '../components/BungeeJumpQuestion';
 import HistoryScrollQuestion from '../components/HistoryScrollQuestion';
+import NeonFlickerQuestion from '../components/NeonFlickerQuestion';
+import SlotMachineQuestion from '../components/SlotMachineQuestion';
 import './screens.css';
 
 const QUESTION_TIME = 15; // seconds per question
@@ -364,7 +366,7 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
   }
 
   // CableCarQuestion is completely self-contained — render it without the normal card
-  if (['cable_car', 'image_card', 'bubble', 'map_pin', 'key_drag', 'taxi_map', 'diamond_rise', 'tower_zoom', 'peak_tram', 'bungee_jump', 'history_scroll'].includes(q.ui_style)) {
+  if (['cable_car', 'image_card', 'bubble', 'map_pin', 'key_drag', 'taxi_map', 'diamond_rise', 'tower_zoom', 'peak_tram', 'bungee_jump', 'history_scroll', 'neon_flicker', 'slot_machine'].includes(q.ui_style)) {
     const Component =
       q.ui_style === 'cable_car'  ? CableCarQuestion
       : q.ui_style === 'image_card' ? ImageCardQuestion
@@ -376,6 +378,8 @@ export default function QuizScreen({ employee, currentSet, initialProgress, onNe
       : q.ui_style === 'tower_zoom'   ? TowerZoomQuestion
       : q.ui_style === 'peak_tram'    ? PeakTramQuestion
       : q.ui_style === 'bungee_jump'  ? BungeeJumpQuestion
+      : q.ui_style === 'neon_flicker' ? NeonFlickerQuestion
+      : q.ui_style === 'slot_machine' ? SlotMachineQuestion
       : HistoryScrollQuestion;
     return (
       <div className="quiz-wrap">

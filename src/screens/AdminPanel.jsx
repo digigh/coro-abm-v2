@@ -25,6 +25,8 @@ export default function AdminPanel({ onExit }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -70,6 +72,44 @@ export default function AdminPanel({ onExit }) {
     }
   };
 
+  const startEditing = (q) => {
+    setEditingId(q.id);
+    setEditForm({ ...q });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditForm(null);
+  };
+
+  const saveQuestion = async () => {
+    if (!editForm) return;
+    setSaving(true);
+    
+    // Ensure index is an integer
+    const updatedData = {
+      ...editForm,
+      correct_answer_index: parseInt(editForm.correct_answer_index)
+    };
+
+    // Remove id from update payload
+    const { id, ...payload } = updatedData;
+
+    const { error } = await supabase
+      .from('questions')
+      .update(payload)
+      .eq('id', id);
+
+    if (!error) {
+      setQuestions(questions.map(q => q.id === id ? updatedData : q));
+      setEditingId(null);
+      setEditForm(null);
+    } else {
+      alert('Error saving question: ' + error.message);
+    }
+    setSaving(false);
+  };
+
   const saveSettings = async () => {
     setSaving(true);
     const { error } = await supabase
@@ -78,8 +118,8 @@ export default function AdminPanel({ onExit }) {
       .eq('id', 1);
     
     setSaving(false);
-    if (!error) alert('Settings saved successfully!');
   };
+
 
   const filteredQuestions = questions.filter(q => 
     q.question_text.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -150,23 +190,81 @@ export default function AdminPanel({ onExit }) {
                 </div>
 
                 <div className="questions-grid">
-                  {filteredQuestions.map((q) => (
-                    <div key={q.id} className={`admin-card q-card-mini ${!q.is_active ? 'inactive' : ''}`}>
-                      <div className="card-header">
-                        <span className="card-tag">{q.tag}</span>
-                        <button 
-                          className={`toggle-btn ${q.is_active ? 'on' : 'off'}`}
-                          onClick={() => toggleQuestion(q.id, q.is_active)}
-                        >
-                          {q.is_active ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
-                        </button>
+                  {filteredQuestions.map((q) => {
+                    const isEditing = editingId === q.id;
+                    return (
+                      <div key={q.id} className={`admin-card q-card-mini ${!q.is_active ? 'inactive' : ''} ${isEditing ? 'editing' : ''}`}>
+                        {isEditing ? (
+                          <div className="edit-form-mini">
+                            <div className="form-row">
+                              <input 
+                                className="edit-input"
+                                value={editForm.tag} 
+                                onChange={e => setEditForm({...editForm, tag: e.target.value})}
+                                placeholder="Tag"
+                              />
+                            </div>
+                            <textarea 
+                              className="edit-textarea"
+                              value={editForm.question_text}
+                              onChange={e => setEditForm({...editForm, question_text: e.target.value})}
+                              placeholder="Question Text"
+                            />
+                            <div className="options-edit">
+                              {editForm.options.map((opt, idx) => (
+                                <div key={idx} className="option-row">
+                                  <input 
+                                    type="radio" 
+                                    name="correct" 
+                                    checked={editForm.correct_answer_index === idx}
+                                    onChange={() => setEditForm({...editForm, correct_answer_index: idx})}
+                                  />
+                                  <input 
+                                    className="edit-input"
+                                    value={opt} 
+                                    onChange={e => {
+                                      const newOpts = [...editForm.options];
+                                      newOpts[idx] = e.target.value;
+                                      setEditForm({...editForm, options: newOpts});
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                            <div className="edit-actions">
+                              <button className="cancel-btn" onClick={cancelEditing}>Cancel</button>
+                              <button className="save-btn-mini" onClick={saveQuestion} disabled={saving}>
+                                {saving ? '...' : 'Save'}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="card-header">
+                              <div className="header-left">
+                                <span className="card-tag">{q.tag}</span>
+                              </div>
+                              <div className="card-actions">
+                                <button className="edit-icon-btn" onClick={() => startEditing(q)}>
+                                  Edit
+                                </button>
+                                <button 
+                                  className={`toggle-btn ${q.is_active ? 'on' : 'off'}`}
+                                  onClick={() => toggleQuestion(q.id, q.is_active)}
+                                >
+                                  {q.is_active ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
+                                </button>
+                              </div>
+                            </div>
+                            <p className="card-text">{q.question_text}</p>
+                            <div className="card-footer">
+                              <span className="style-badge">{q.ui_style}</span>
+                            </div>
+                          </>
+                        )}
                       </div>
-                      <p className="card-text">{q.question_text}</p>
-                      <div className="card-footer">
-                        <span className="style-badge">{q.ui_style}</span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
