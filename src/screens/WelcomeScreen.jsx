@@ -4,6 +4,7 @@ import { Menu, Star, Crown, Clock, Compass } from 'lucide-react';
 import './WelcomeScreen.css';
 import SoonModal from '../components/SoonModal';
 import BatchesScreen from './BatchesScreen';
+import CommitteeScreen from './CommitteeScreen';
 import venetianImg from '../assets/destinations/venetian.png';
 import kowloonImg from '../assets/destinations/kowloon.png';
 import oceanParkImg from '../assets/destinations/oceanpark.png';
@@ -214,6 +215,7 @@ const WelcomeScreen = ({ onNext }) => {
   const [[page, direction], setPage] = useState([0, 1]);
   const [[galaPage, galaDirection], setGalaPage] = useState([0, 1]);
   const [soonModal, setSoonModal] = useState({ isOpen: false, title: '' });
+  const [showCommittee, setShowCommittee] = useState(false);
 
   const currentImageIndex = Math.abs(page % carouselData.length);
   const currentData = carouselData[currentImageIndex];
@@ -266,6 +268,10 @@ const WelcomeScreen = ({ onNext }) => {
   const handleSoonClick = (title) => {
     if (title === 'Batches') {
       setShowBatches(true);
+      return;
+    }
+    if (title === 'Core Committee') {
+      setShowCommittee(true);
       return;
     }
     setSoonModal({ isOpen: true, title });
@@ -370,7 +376,7 @@ const WelcomeScreen = ({ onNext }) => {
             <button className="btn-initiate" onClick={handleRegister}>
               <span className="edge-light"></span>
               <div className="btn-inner">
-                <span className="btn-text">It’s the Final Showdown</span>
+                <span className="btn-text">Participate Now and Win</span>
                 <div className="btn-arrow">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -574,6 +580,19 @@ const WelcomeScreen = ({ onNext }) => {
               highlight={typeof showBatches === 'object' ? showBatches.highlight : null}
               onBack={() => setShowBatches(false)} 
             />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showCommittee && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
+          >
+            <CommitteeScreen onBack={() => setShowCommittee(false)} />
           </motion.div>
         )}
       </AnimatePresence>
