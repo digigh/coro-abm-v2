@@ -81,7 +81,7 @@ export default function LandingScreen({ onNext, onHome }) {
           transition={{ delay: 0.75, type: 'spring', damping: 20 }}
           disabled={isLaunching}
         >
-          <span className="btn-icon"><Rocket size={22} strokeWidth={2.5} /></span> Begin Challenge
+          <span className="btn-icon"><Rocket size={22} strokeWidth={2.5} /></span> Final Round
         </motion.button>
 
       </div>
