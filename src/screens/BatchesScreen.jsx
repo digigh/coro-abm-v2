@@ -40,6 +40,18 @@ const ICON_MAP = {
   CheckCircle: <CheckCircle size={18} />
 };
 
+const IMAGE_MAP = {
+  venetianImg,
+  kowloonImg,
+  oceanParkImg,
+  victoriaPeakImg,
+  macauNeon,
+  np360Cool,
+  oceanParkFun,
+  hotelNeon,
+  landmarksCool
+};
+
 import { DEFAULT_BATCH_DATA } from '../data/itineraryData';
 
 export default function BatchesScreen({ onBack, initialBatch = null }) {
@@ -287,7 +299,7 @@ const ItineraryShowcase = ({ batch, initialDay = 1, onBack }) => {
                     <div className="rhombus-node-wrap">
                       <div className="rhombus-node">
                         <img 
-                          src={act.image || batch.itinerary[activeDay-1].dayImage} 
+                          src={DEFAULT_BATCH_DATA[batch.id].itinerary[activeDay-1].activities[i].image || "https://images.unsplash.com/photo-1543059123-289b4f97125f?q=80&w=600&auto=format&fit=crop"} 
                           alt="Activity" 
                           className="rhombus-img"
                         />
