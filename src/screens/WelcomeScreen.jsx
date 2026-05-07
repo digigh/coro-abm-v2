@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, Star, Crown, Clock, Compass } from 'lucide-react';
+import { Menu, Star, Crown, Clock, Compass, X, Calendar, MapPin, ChevronRight } from 'lucide-react';
 import './WelcomeScreen.css';
 import SoonModal from '../components/SoonModal';
 import BatchesScreen from './BatchesScreen';
 import CommitteeScreen from './CommitteeScreen';
+import AwardsScreen from './AwardsScreen';
 import venetianImg from '../assets/destinations/venetian.png';
 import kowloonImg from '../assets/destinations/kowloon.png';
 import oceanParkImg from '../assets/destinations/oceanpark.png';
 import victoriaPeakImg from '../assets/destinations/victoria_peak.png';
+import PhotosScreen from './PhotosScreen';
 
 const carouselData = [
   {
@@ -88,7 +90,6 @@ const GifTransition = () => (
     />
   </div>
 );
-
 const galaData = [
   {
     id: 'venetian',
@@ -115,6 +116,51 @@ const galaData = [
     target: { batch: 1, day: 2, highlight: "Ocean Park" }
   }
 ];
+
+const BATCH_DATA_MINI = {
+  1: {
+    id: 1,
+    title: "Batch 1",
+    group: "GROUP 1",
+    dates: "08–12 May 2026",
+    image: "/batch1_bg.png",
+    desc: "Explore Lantau, Ocean Park, and the Grand Venetian Gala."
+  },
+  2: {
+    id: 2,
+    title: "Batch 2",
+    group: "GROUP 2",
+    dates: "10–14 May 2026",
+    image: "/batch2_bg.png",
+    desc: "Experience Macau's heritage, Strategic Summit, and HK Skyline."
+  }
+};
+
+const BatchCardMini = ({ data, onClick }) => (
+  <motion.div 
+    className="batch-card-mini"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    whileHover={{ y: -10, scale: 1.02 }}
+    onClick={onClick}
+  >
+    <div className="mini-card-bg">
+      <img src={data.image} alt={data.title} />
+      <div className="mini-card-overlay" />
+    </div>
+    <div className="mini-card-content">
+      <div className="mini-card-badge">{data.group}</div>
+      <h3>{data.title}</h3>
+      <div className="mini-card-stats">
+        <Calendar size={14} /> <span>{data.dates}</span>
+      </div>
+      <p>{data.desc}</p>
+      <div className="mini-card-footer">
+        VIEW ITINERARY <ChevronRight size={16} />
+      </div>
+    </div>
+  </motion.div>
+);
 
 const AnimatedNumber = ({ value }) => (
   <div className="animated-number-wrapper">
@@ -216,6 +262,8 @@ const WelcomeScreen = ({ onNext }) => {
   const [[galaPage, galaDirection], setGalaPage] = useState([0, 1]);
   const [soonModal, setSoonModal] = useState({ isOpen: false, title: '' });
   const [showCommittee, setShowCommittee] = useState(false);
+  const [showAwards, setShowAwards] = useState(false);
+  const [showPhotos, setShowPhotos] = useState(false);
 
   const currentImageIndex = Math.abs(page % carouselData.length);
   const currentData = carouselData[currentImageIndex];
@@ -265,15 +313,20 @@ const WelcomeScreen = ({ onNext }) => {
     setIsMobileMenuOpen(false);
   };
 
-  const handleSoonClick = (title) => {
+  const handleSoonClick = (title, payload = null) => {
     if (title === 'Batches') {
-      setShowBatches(true);
+      setShowBatches(payload || true);
       return;
     }
     if (title === 'Core Committee') {
       setShowCommittee(true);
       return;
     }
+    if (title === 'Awards') {
+      setShowAwards(true);
+      return;
+    }
+    // Photos is currently disabled and shows SoonModal
     setSoonModal({ isOpen: true, title });
   };
 
@@ -321,34 +374,72 @@ const WelcomeScreen = ({ onNext }) => {
             <button className="nav-btn-link" onClick={() => handleSoonClick('Core Committee')}>COMMITTEE</button>
             <button className="nav-btn-link" onClick={() => handleSoonClick('Photos')}>PHOTOS</button>
           </nav>
-          <div className="nav-actions">
-            <button className="menu-btn" onClick={handleMenuToggle}><Menu size={24} /></button>
+          
+          <div className="nav-actions mobile-only">
+            <button className="summit-menu-trigger" onClick={handleMenuToggle}>
+              <Menu size={24} />
+            </button>
           </div>
 
-          {/* Mobile Dropdown Menu */}
+          
+          {/* Immersive Mobile Menu Overlay */}
           <AnimatePresence>
             {isMobileMenuOpen && (
               <motion.div
-                className="mobile-dropdown-menu"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
+                className="mobile-immersive-menu"
+                initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                animate={{ opacity: 1, backdropFilter: 'blur(20px)' }}
+                exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                transition={{ duration: 0.4 }}
               >
-                <button className="mobile-nav-btn" onClick={(e) => scrollToSection(e, 'overview')}>OVERVIEW</button>
-                <button className="mobile-nav-btn" onClick={(e) => scrollToSection(e, 'experiences')}>EXPERIENCES</button>
-                <button className="mobile-nav-btn" onClick={() => handleSoonClick('Awards')}>AWARDS</button>
-                <button className="mobile-nav-btn" onClick={() => handleSoonClick('Gallery')}>GALLERY</button>
-                <button className="mobile-nav-btn" onClick={() => handleSoonClick('Batches')}>BATCHES</button>
-                <button className="mobile-nav-btn" onClick={() => handleSoonClick('Core Committee')}>COMMITTEE</button>
-                <button className="mobile-nav-btn" onClick={() => handleSoonClick('Photos')}>PHOTOS</button>
+                <div className="mobile-menu-bg-aurora" />
+                <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)}>
+                  <X size={32} />
+                </button>
+                
+                <nav className="mobile-nav-container">
+                  {[
+                    { label: 'OVERVIEW', id: 'overview' },
+                    { label: 'EXPERIENCES', id: 'experiences' },
+                    { label: 'AWARDS', type: 'Awards' },
+                    { label: 'GALLERY', type: 'Gallery' },
+                    { label: 'BATCHES', type: 'Batches' },
+                    { label: 'COMMITTEE', type: 'Core Committee' },
+                    { label: 'PHOTOS', type: 'Photos' }
+                  ].map((item, idx) => (
+                    <motion.button
+                      key={item.label}
+                      className="mobile-nav-item"
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + idx * 0.05, duration: 0.4 }}
+                      onClick={(e) => {
+                        setIsMobileMenuOpen(false);
+                        item.id ? scrollToSection(e, item.id) : handleSoonClick(item.type);
+                      }}
+                    >
+                      <span className="item-number">0{idx + 1}</span>
+                      <span className="item-label">{item.label}</span>
+                      <div className="item-underline" />
+                    </motion.button>
+                  ))}
+                </nav>
+
+                <div className="mobile-menu-footer">
+                  <p>ABM 2026 · MACAU & HONG KONG</p>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
+
         </header>
 
-        {/* --- GIANT TYPOGRAPHY & CTA --- */}
+        {/* --- GIANT TYPOGRAPHY --- */}
         <div className="hero-center-text">
+          <div className="hero-main-image-container">
+            <img src="/hk_macao_logo_ms.png" className="hero-main-summit-image" alt="Summit Theme" />
+          </div>
+
           <div className="hero-title-container">
             <div className="tree-unit-container">
               <img src="/tree-logo.png" className="hero-side-logo" alt="Growth Tree Logo" />
@@ -359,72 +450,19 @@ const WelcomeScreen = ({ onNext }) => {
               <span className="line-two">TO <span className="shimmer-text">ACCELERATE</span></span>
             </h1>
           </div>
-          <motion.div
-            className="hero-destination-subtitle"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          >
-            <span className="dest-text shimmer-text">HONGKONG</span>
-            <span className="dest-dot"></span>
-            <span className="dest-text shimmer-text">MACAO</span>
-          </motion.div>
+          
           <CountdownTimer />
-
-          {/* Action Button automatically positioned relative to content */}
-          <div className="hero-action-container-relative">
-            <button className="btn-initiate" onClick={handleRegister}>
-              <span className="edge-light"></span>
-              <div className="btn-inner">
-                <span className="btn-text">It’s the Final Showdown</span>
-                <div className="btn-arrow">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                </div>
-              </div>
-            </button>
-          </div>
         </div>
 
-        {/* --- DYNAMIC OVERLAY TEXT BLOCKS --- */}
+        {/* --- BATCHES OVERLAY --- */}
         <div className="hero-panels-wrapper">
-          <AnimatePresence mode="wait">
-            <motion.div
-              className="hero-bottom-left"
-              key={`left-${page}`}
-              variants={textVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className="text-block glossy-panel">
-                <h3>{currentData.leftTitle}</h3>
-                <h4>{currentData.leftSubtitle}</h4>
-                <p>{currentData.leftDesc}</p>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+          <div className="hero-bottom-left">
+            <BatchCardMini data={BATCH_DATA_MINI[1]} onClick={() => handleSoonClick('Batches', { batch: 1 })} />
+          </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              className="hero-bottom-right-text"
-              key={`right-${page}`}
-              variants={textVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <div className="text-block glossy-panel right">
-                <h3>{currentData.rightTitle}</h3>
-                <h4>{currentData.rightSubtitle}</h4>
-                <p className="secondary-desc">{currentData.rightDesc}</p>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+          <div className="hero-bottom-right-text">
+            <BatchCardMini data={BATCH_DATA_MINI[2]} onClick={() => handleSoonClick('Batches', { batch: 2 })} />
+          </div>
         </div>
 
         {/* --- CAROUSEL POINTERS --- */}
@@ -438,6 +476,22 @@ const WelcomeScreen = ({ onNext }) => {
           ))}
         </div>
       </section>
+
+      {/* --- MOVING TICKER STRIP --- */}
+      <div className="moving-ticker-strip">
+        <div className="ticker-content">
+          {[...Array(8)].map((_, i) => (
+            <span key={i} className="ticker-text">
+              WELCOME TO COROMANDEL ANNUAL MEET 2026 <span className="ticker-bullet">•</span> 
+            </span>
+          ))}
+          {[...Array(8)].map((_, i) => (
+            <span key={i} className="ticker-text">
+              WELCOME TO COROMANDEL ANNUAL MEET 2026 <span className="ticker-bullet">•</span> 
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* --- SVG Gradient Defs --- */}
       <svg style={{ width: 0, height: 0, position: 'absolute' }} aria-hidden="true" focusable="false">
@@ -596,6 +650,33 @@ const WelcomeScreen = ({ onNext }) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {showAwards && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
+          >
+            <AwardsScreen onBack={() => setShowAwards(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showPhotos && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
+          >
+            <PhotosScreen onBack={() => setShowPhotos(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };

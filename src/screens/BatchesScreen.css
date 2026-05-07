@@ -10,6 +10,11 @@
   padding: 40px 20px;
 }
 
+:root {
+  --gold: #fbbf24;
+  --spring-green: #02f5a1;
+}
+
 /* --- DEEP ONYX & SPRING GREEN MESH --- */
 .batches-screen::before {
   content: '';
@@ -89,8 +94,8 @@
   align-items: center;
   gap: 8px;
   background: rgba(7, 25, 30, 0.4);
-  border: 1px solid rgba(2, 245, 161, 0.2);
-  color: #02f5a1;
+  border: 1px solid var(--gold);
+  color: var(--gold);
   padding: 10px 20px;
   border-radius: 30px;
   cursor: pointer;
@@ -100,10 +105,10 @@
 }
 
 .back-home-btn:hover {
-  background: rgba(2, 245, 161, 0.1);
-  border-color: #02f5a1;
+  background: rgba(251, 191, 36, 0.1);
+  border-color: var(--gold);
   transform: translateX(-5px);
-  box-shadow: 0 8px 20px rgba(2, 245, 161, 0.2);
+  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.2);
 }
 
 .selection-subtitle {
@@ -184,7 +189,7 @@
   position: absolute;
   top: 40px;
   right: 40px;
-  background: #02f5a1;
+  background: linear-gradient(135deg, var(--gold), #f59e0b);
   color: #07191e;
   padding: 8px 20px;
   border-radius: 30px;
@@ -200,7 +205,7 @@
   margin: 0 0 15px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  background: linear-gradient(to right, #fff, #02f5a1);
+  background: linear-gradient(to right, #fff, var(--gold), var(--spring-green));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 10px 30px rgba(2, 245, 161, 0.2);
@@ -250,7 +255,7 @@
 
 .explore-btn-vibrant {
   width: 100%;
-  background: #02f5a1;
+  background: linear-gradient(135deg, var(--gold), #f59e0b);
   color: #07191e;
   border: none;
   padding: 18px;
@@ -385,9 +390,9 @@
 }
 
 .day-btn.active {
-  background: #02f5a1;
+  background: linear-gradient(135deg, var(--gold), #f59e0b);
   color: #07191e;
-  box-shadow: 0 10px 30px rgba(2, 245, 161, 0.3);
+  box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
 }
 
 .day-num {
@@ -440,7 +445,7 @@
 }
 
 .day-badge {
-  background: #02f5a1;
+  background: var(--gold);
   color: #07191e;
   padding: 4px 15px;
   border-radius: 20px;

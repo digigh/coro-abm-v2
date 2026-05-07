@@ -8,7 +8,9 @@ import LoginScreen from './screens/LoginScreen';
 import LoaderScreen from './screens/LoaderScreen';
 import QuizScreen from './screens/QuizScreen';
 import CompletionScreen from './screens/CompletionScreen';
-import AdminPanel from './screens/AdminPanel'; // New
+import AdminPanel from './screens/AdminPanel'; 
+import GlobalPopup from './components/GlobalPopup';
+import { supabase } from './supabaseClient';
 
 import './index.css';
 
@@ -21,18 +23,35 @@ function App() {
   const [initialProgress, setInitialProgress] = useState(null);
   const [quizScore, setQuizScore] = useState(0);
   const [timeTaken, setTimeTaken] = useState(0);
+  const [globalPopupConfig, setGlobalPopupConfig] = useState(null);
+  const [isPopupDismissed, setIsPopupDismissed] = useState(false);
 
-  // Check for admin passcode in URL
+  // Check for admin passcode in URL & Fetch Global Settings
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('admin') === 'Caffeine') {
       setCurrentScreen('admin');
-      
-      // HIGH SECURITY: Immediately wipe the passcode from the address bar
-      // This prevents the password from showing in browser history or to onlookers
       const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
       window.history.replaceState({ path: newUrl }, '', newUrl);
     }
+
+    const fetchGlobalSettings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('abm_global_settings')
+          .select('*')
+          .eq('key', 'popup_config')
+          .single();
+        
+        if (data && data.value) {
+          setGlobalPopupConfig(data.value);
+        }
+      } catch (err) {
+        console.error("Failed to fetch global settings:", err);
+      }
+    };
+
+    fetchGlobalSettings();
   }, []);
 
   const screenVariants = {
@@ -45,6 +64,10 @@ function App() {
 
   return (
     <>
+      <GlobalPopup 
+        config={!isPopupDismissed ? globalPopupConfig : null} 
+        onClose={() => setIsPopupDismissed(true)} 
+      />
       {currentScreen !== 'welcome' && currentScreen !== 'admin' && (
         <>
           <div id="ambientBg">

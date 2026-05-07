@@ -12,9 +12,17 @@ import {
   ChevronRight,
   Clock,
   User,
-  ShieldCheck
+  ShieldCheck,
+  Map,
+  Megaphone,
+  Plus,
+  Trash2,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
+import { DEFAULT_BATCH_DATA } from '../data/itineraryData';
 import './screens.css';
 
 export default function AdminPanel({ onExit }) {
@@ -57,8 +65,60 @@ export default function AdminPanel({ onExit }) {
         .select('*')
         .single();
       if (data) setSettings(data);
+    } else if (activeTab === 'announcements') {
+      const { data } = await supabase
+        .from('abm_global_settings')
+        .select('*')
+        .eq('key', 'popup_config')
+        .single();
+      if (data) setPopupConfig(data.value);
+    } else if (activeTab === 'itinerary') {
+      const { data, error } = await supabase
+        .from('abm_itinerary')
+        .select('*')
+        .order('batch_id', { ascending: true });
+      
+      if (data && data.length > 0) {
+        const mapped = data.reduce((acc, curr) => ({ ...acc, [curr.batch_id]: curr.data }), {});
+        setItineraryData({ ...DEFAULT_BATCH_DATA, ...mapped });
+      } else {
+        // Fallback to local default data if DB is empty or error occurs
+        setItineraryData(DEFAULT_BATCH_DATA);
+      }
     }
     setLoading(false);
+  };
+
+  const [popupConfig, setPopupConfig] = useState({
+    enabled: false,
+    icon: 'megaphone',
+    heading: '',
+    text: ''
+  });
+
+  const [itineraryData, setItineraryData] = useState(null);
+  const [selectedBatch, setSelectedBatch] = useState(1);
+  const [selectedDay, setSelectedDay] = useState(0);
+
+  const saveAnnouncements = async () => {
+    setSaving(true);
+    const { error } = await supabase
+      .from('abm_global_settings')
+      .upsert({ key: 'popup_config', value: popupConfig });
+    
+    if (error) alert('Error: ' + error.message);
+    setSaving(false);
+  };
+
+  const saveItinerary = async () => {
+    setSaving(true);
+    const batchData = itineraryData[selectedBatch];
+    const { error } = await supabase
+      .from('abm_itinerary')
+      .upsert({ batch_id: selectedBatch, data: batchData });
+    
+    if (error) alert('Error: ' + error.message);
+    setSaving(false);
   };
 
   const toggleQuestion = async (id, currentState) => {
@@ -126,9 +186,17 @@ export default function AdminPanel({ onExit }) {
     q.tag?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const isDummySupabase = !import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL.includes('dummy');
+
   return (
     <div className="admin-container">
-      <div className="admin-sidebar">
+      {isDummySupabase && (
+        <div className="supabase-warning-banner">
+          <AlertTriangle size={18} />
+          <span>Supabase not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.</span>
+        </div>
+      )}
+      <aside className="admin-sidebar">
         <div className="admin-logo">
           <div className="logo-icon"><ShieldCheck size={24} /></div>
           <span>Control Panel</span>
@@ -148,17 +216,29 @@ export default function AdminPanel({ onExit }) {
             <Trophy size={18} /> Leaderboard
           </button>
           <button 
+            className={`nav-item ${activeTab === 'itinerary' ? 'active' : ''}`}
+            onClick={() => setActiveTab('itinerary')}
+          >
+            <Map size={18} /> Itinerary
+          </button>
+          <button 
+            className={`nav-item ${activeTab === 'announcements' ? 'active' : ''}`}
+            onClick={() => setActiveTab('announcements')}
+          >
+            <Megaphone size={18} /> Announcements
+          </button>
+          <button 
             className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveTab('settings')}
           >
-            <Settings size={18} /> Global Settings
+            <Settings size={18} /> Settings
           </button>
         </nav>
 
         <button className="admin-exit" onClick={onExit}>
           Exit Dashboard
         </button>
-      </div>
+      </aside>
 
       <main className="admin-main">
         <header className="admin-header">
@@ -337,6 +417,195 @@ export default function AdminPanel({ onExit }) {
                     Save Changes
                   </button>
                 </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'announcements' && (
+              <motion.div 
+                key="announcements"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <div className="admin-card settings-form">
+                  <div className="form-group-row">
+                    <label>Enable Global Popup</label>
+                    <button 
+                      className={`toggle-btn ${popupConfig.enabled ? 'on' : 'off'}`}
+                      onClick={() => setPopupConfig({ ...popupConfig, enabled: !popupConfig.enabled })}
+                    >
+                      {popupConfig.enabled ? <ToggleRight size={32} /> : <ToggleLeft size={32} />}
+                    </button>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Popup Icon</label>
+                    <select 
+                      value={popupConfig.icon}
+                      onChange={(e) => setPopupConfig({ ...popupConfig, icon: e.target.value })}
+                      className="admin-select"
+                    >
+                      <option value="megaphone">Megaphone</option>
+                      <option value="bell">Bell</option>
+                      <option value="info">Info</option>
+                      <option value="alert">Alert</option>
+                      <option value="success">Success</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Heading</label>
+                    <input 
+                      type="text" 
+                      value={popupConfig.heading}
+                      onChange={(e) => setPopupConfig({ ...popupConfig, heading: e.target.value })}
+                      placeholder="Enter heading..."
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Message Text</label>
+                    <textarea 
+                      value={popupConfig.text}
+                      onChange={(e) => setPopupConfig({ ...popupConfig, text: e.target.value })}
+                      placeholder="Enter announcement message..."
+                      rows={4}
+                    />
+                  </div>
+
+                  <button className="save-btn" onClick={saveAnnouncements} disabled={saving}>
+                    {saving ? <RefreshCcw size={16} className="spinning" /> : <Save size={16} />}
+                    Update Popup
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'itinerary' && (
+              <motion.div 
+                key="itinerary"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                {!itineraryData ? (
+                  <div className="loading-state">
+                    <RefreshCcw size={24} className="spinning" />
+                    <p>Fetching itinerary data...</p>
+                  </div>
+                ) : (
+                  <div className="itinerary-editor">
+                    <div className="editor-sidebar">
+                      <h3>Batches</h3>
+                      {[1, 2].map(b => (
+                        <button 
+                          key={b}
+                          className={`batch-selector ${selectedBatch === b ? 'active' : ''}`}
+                          onClick={() => { setSelectedBatch(b); setSelectedDay(0); }}
+                        >
+                          Batch {b}
+                        </button>
+                      ))}
+
+                      <h3 style={{ marginTop: '20px' }}>Days</h3>
+                      {itineraryData[selectedBatch].itinerary.map((day, idx) => (
+                        <button 
+                          key={idx}
+                          className={`day-selector ${selectedDay === idx ? 'active' : ''}`}
+                          onClick={() => setSelectedDay(idx)}
+                        >
+                          Day {day.day}: {day.date}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="editor-main">
+                      <div className="admin-card">
+                        <div className="form-group">
+                          <label>Day Title</label>
+                          <input 
+                            type="text"
+                            value={itineraryData[selectedBatch].itinerary[selectedDay].title}
+                            onChange={(e) => {
+                              const newData = { ...itineraryData };
+                              newData[selectedBatch].itinerary[selectedDay].title = e.target.value;
+                              setItineraryData(newData);
+                            }}
+                          />
+                        </div>
+
+                        <div className="activities-list">
+                          <label>Activities</label>
+                          {itineraryData[selectedBatch].itinerary[selectedDay].activities.map((act, idx) => (
+                            <div key={idx} className="activity-edit-card">
+                              <div className="act-header">
+                                <input 
+                                  className="time-input"
+                                  value={act.time}
+                                  onChange={(e) => {
+                                    const newData = { ...itineraryData };
+                                    newData[selectedBatch].itinerary[selectedDay].activities[idx].time = e.target.value;
+                                    setItineraryData(newData);
+                                  }}
+                                />
+                                <button 
+                                  className="delete-btn"
+                                  onClick={() => {
+                                    const newData = { ...itineraryData };
+                                    newData[selectedBatch].itinerary[selectedDay].activities.splice(idx, 1);
+                                    setItineraryData(newData);
+                                  }}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                              <textarea 
+                                value={act.text}
+                                onChange={(e) => {
+                                  const newData = { ...itineraryData };
+                                  newData[selectedBatch].itinerary[selectedDay].activities[idx].text = e.target.value;
+                                  setItineraryData(newData);
+                                }}
+                              />
+                              <div className="form-group" style={{ marginTop: '10px' }}>
+                                <label style={{ fontSize: '0.7rem' }}>Map Link (Optional)</label>
+                                <input 
+                                  type="text"
+                                  placeholder="Google Maps URL"
+                                  value={act.map || ''}
+                                  onChange={(e) => {
+                                    const newData = { ...itineraryData };
+                                    newData[selectedBatch].itinerary[selectedDay].activities[idx].map = e.target.value;
+                                    setItineraryData(newData);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                          <button 
+                            className="add-btn"
+                            onClick={() => {
+                              const newData = { ...itineraryData };
+                              newData[selectedBatch].itinerary[selectedDay].activities.push({
+                                time: "New Time",
+                                text: "New Activity",
+                                icon: "Compass"
+                              });
+                              setItineraryData(newData);
+                            }}
+                          >
+                            <Plus size={16} /> Add Activity
+                          </button>
+                        </div>
+
+                        <button className="save-btn" style={{ marginTop: '20px' }} onClick={saveItinerary} disabled={saving}>
+                          {saving ? <RefreshCcw size={16} className="spinning" /> : <Save size={16} />}
+                          Save Batch {selectedBatch}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

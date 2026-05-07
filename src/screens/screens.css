@@ -1255,7 +1255,147 @@
   color: rgba(255, 255, 255, 0.4);
   font-size: 13px;
   font-weight: 500;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.supabase-warning-banner {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  z-index: 1000;
+  border-radius: 12px;
+  margin: 10px;
+}
+
+
+/* --- New Admin Tabs Styling --- */
+.form-group-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.admin-select {
+  width: 100%;
+  background: rgba(2, 6, 23, 0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+}
+
+.itinerary-editor {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.editor-sidebar {
+  background: rgba(15, 23, 42, 0.4);
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.editor-sidebar h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+}
+
+.batch-selector, .day-selector {
+  width: 100%;
+  text-align: left;
+  padding: 12px 15px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.batch-selector.active, .day-selector.active {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.activity-edit-card {
+  background: rgba(2, 6, 23, 0.3);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.act-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.time-input {
+  background: none;
+  border: none;
+  color: #fbbf24;
+  font-weight: 700;
+  width: auto;
+  padding: 0;
+}
+
+.delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-btn {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px dashed rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 15px;
+  border-radius: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s;
+}
+
+.add-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: #fbbf24;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px;
+  gap: 20px;
+  color: rgba(255,255,255,0.4);
 }
 
 .admin-table td {
