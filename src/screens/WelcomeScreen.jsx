@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, Star, Crown, Clock, Compass, X, Calendar, MapPin, ChevronRight } from 'lucide-react';
+import { Menu, Star, Crown, Clock, Compass, X, Calendar, MapPin, ChevronRight, Sparkles, Rocket } from 'lucide-react';
 import './WelcomeScreen.css';
 import SoonModal from '../components/SoonModal';
 import BatchesScreen from './BatchesScreen';
@@ -104,7 +104,19 @@ const galaData = [
     image: victoriaPeakImg,
     title: "The Peak View",
     desc: "Witness the iconic skyline from the pinnacle of Asia's world city.",
-    icon: <Compass size={32} />,
+    icon: (
+      <div className="fiery-3d-core-container">
+        <div className="core-3d-ring ring-3d-x"></div>
+        <div className="core-3d-ring ring-3d-y"></div>
+        <div className="core-3d-ring ring-3d-z"></div>
+        <div className="fire-heart">
+          <div className="fire-layer layer-1"></div>
+          <div className="fire-layer layer-2"></div>
+          <div className="fire-layer layer-3"></div>
+          <div className="plasma-center"></div>
+        </div>
+      </div>
+    ),
     target: { batch: 1, day: 3, highlight: "Peak" }
   },
   {
@@ -326,7 +338,10 @@ const WelcomeScreen = ({ onNext }) => {
       setShowAwards(true);
       return;
     }
-    // Photos is currently disabled and shows SoonModal
+    if (title === 'Photos') {
+      setShowPhotos(true);
+      return;
+    }
     setSoonModal({ isOpen: true, title });
   };
 
@@ -375,10 +390,35 @@ const WelcomeScreen = ({ onNext }) => {
             <button className="nav-btn-link" onClick={() => handleSoonClick('Photos')}>PHOTOS</button>
           </nav>
           
-          <div className="nav-actions mobile-only">
-            <button className="summit-menu-trigger" onClick={handleMenuToggle}>
-              <Menu size={24} />
-            </button>
+          <div className="nav-actions central-trigger-wrap">
+            <motion.div 
+              className="trigger-composition"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <motion.button 
+                className="summit-menu-trigger interesting-trigger" 
+                onClick={handleMenuToggle}
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                <div className="graphical-3d-neon-engine">
+                  <div className="neon-3d-orbit orbit-hk-red" />
+                  <div className="neon-3d-orbit orbit-macao-green" />
+                  <div className="neon-3d-orbit orbit-summit-gold" />
+                  <div className="neon-crystal-core">
+                    <div className="crystal-shine" />
+                    <div className="plasma-pulse" />
+                  </div>
+                  <div className="cyber-spark s1" />
+                  <div className="cyber-spark s2" />
+                  <div className="cyber-spark s3" />
+                </div>
+                <div className="trigger-glow-ring" />
+              </motion.button>
+              <span className="trigger-label">EXPLORE</span>
+            </motion.div>
           </div>
 
           
@@ -440,6 +480,17 @@ const WelcomeScreen = ({ onNext }) => {
             <img src="/hk_macao_logo_ms.png" className="hero-main-summit-image" alt="Summit Theme" />
           </div>
 
+          {/* --- RELOCATED MOVING TICKER STRIP (THIN & GOLDEN) --- */}
+          <div className="hero-moving-ticker-separator">
+            <div className="ticker-content">
+              {[...Array(6)].map((_, i) => (
+                <span key={i} className="ticker-text-gold">
+                  WELCOME TO COROMANDEL ANNUAL MEET 2026 <span className="ticker-bullet-gold">•</span> 
+                </span>
+              ))}
+            </div>
+          </div>
+
           <div className="hero-title-container">
             <div className="tree-unit-container">
               <img src="/tree-logo.png" className="hero-side-logo" alt="Growth Tree Logo" />
@@ -465,6 +516,7 @@ const WelcomeScreen = ({ onNext }) => {
           </div>
         </div>
 
+
         {/* --- CAROUSEL POINTERS --- */}
         <div className="carousel-dots">
           {carouselData.map((_, idx) => (
@@ -477,22 +529,6 @@ const WelcomeScreen = ({ onNext }) => {
         </div>
       </section>
 
-      {/* --- MOVING TICKER STRIP --- */}
-      <div className="moving-ticker-strip">
-        <div className="ticker-content">
-          {[...Array(8)].map((_, i) => (
-            <span key={i} className="ticker-text">
-              WELCOME TO COROMANDEL ANNUAL MEET 2026 <span className="ticker-bullet">•</span> 
-            </span>
-          ))}
-          {[...Array(8)].map((_, i) => (
-            <span key={i} className="ticker-text">
-              WELCOME TO COROMANDEL ANNUAL MEET 2026 <span className="ticker-bullet">•</span> 
-            </span>
-          ))}
-        </div>
-      </div>
-
       {/* --- SVG Gradient Defs --- */}
       <svg style={{ width: 0, height: 0, position: 'absolute' }} aria-hidden="true" focusable="false">
         <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -500,6 +536,7 @@ const WelcomeScreen = ({ onNext }) => {
           <stop offset="100%" stopColor="#fbbf24" />
         </linearGradient>
       </svg>
+
 
       {/* --- PROFESSIONAL SUMMIT SECTION --- */}
       <section id="overview" className="professional-summit-section">

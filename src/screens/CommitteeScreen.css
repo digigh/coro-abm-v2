@@ -46,8 +46,8 @@
   z-index: 1;
 }
 
-/* ── Back Button ─────────────────────────────────── */
-.cm-back {
+/* ── Return Button ───────────────────────────────── */
+.cm-return-btn {
   position: fixed;
   top: 28px;
   left: 36px;
@@ -66,8 +66,9 @@
   padding: 0;
   z-index: 100;
   transition: color 0.25s ease;
+  transform: none !important; /* PREVENT FLIP CONFLICT */
 }
-.cm-back:hover { color: rgba(248,250,252,0.9); }
+.cm-return-btn:hover { color: rgba(248,250,252,0.9); }
 
 /* ── Header ─────────────────────────────────────── */
 .cm-header {

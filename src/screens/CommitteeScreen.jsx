@@ -86,7 +86,7 @@ export default function CommitteeScreen({ onBack }) {
 
       {/* Back */}
       <motion.button
-        className="cm-back"
+        className="cm-return-btn"
         onClick={onBack}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -94,7 +94,7 @@ export default function CommitteeScreen({ onBack }) {
         whileHover={{ x: -3 }}
         whileTap={{ scale: 0.95 }}
       >
-        <ArrowLeft size={15} strokeWidth={1.8} />
+        <ChevronLeft size={16} strokeWidth={2} />
         <span>Return</span>
       </motion.button>
 

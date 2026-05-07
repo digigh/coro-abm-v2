@@ -27,8 +27,7 @@ const RegisterStep = ({ employeeId, userData, onChange, onSubmit, onBack, loadin
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1, type: 'spring', stiffness: 300 }}
       >
-        <div className="icon-glow-ring purple-ring" />
-        <UserPlus size={40} className="photos-primary-icon purple-icon" />
+        <UserPlus size={32} className="photos-primary-icon" />
       </motion.div>
 
       <h2 className="step-heading">Complete Your Profile</h2>
@@ -41,12 +40,12 @@ const RegisterStep = ({ employeeId, userData, onChange, onSubmit, onBack, loadin
         {fields.map((field, i) => (
           <motion.div
             key={field.key}
-            className="photos-input-group"
+            className="photos-input-group-centered"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 + i * 0.07 }}
           >
-            <label htmlFor={`reg-${field.key}`}>{field.label}</label>
+            <label className="photos-label-minimal" htmlFor={`reg-${field.key}`}>{field.label}</label>
             <input
               id={`reg-${field.key}`}
               type={field.type}
@@ -72,35 +71,32 @@ const RegisterStep = ({ employeeId, userData, onChange, onSubmit, onBack, loadin
           </motion.div>
         )}
 
-        <div className="photos-btn-group">
-          <motion.button
-            type="button"
-            className="photos-btn-secondary"
-            onClick={onBack}
-            disabled={loading}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            ← Back
-          </motion.button>
+        <motion.button
+          type="submit"
+          className="photos-btn-primary"
+          disabled={loading}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {loading ? (
+            <>
+              <Loader2 size={20} className="spin-icon" />
+              <span>Saving…</span>
+            </>
+          ) : (
+            <span>Register & Continue →</span>
+          )}
+        </motion.button>
 
-          <motion.button
-            type="submit"
-            className="photos-btn-primary"
-            disabled={loading}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {loading ? (
-              <>
-                <Loader2 size={20} className="spin-icon" />
-                <span>Saving…</span>
-              </>
-            ) : (
-              <span>Register & Continue →</span>
-            )}
-          </motion.button>
-        </div>
+        <motion.button
+          type="button"
+          className="photos-btn-secondary-text"
+          onClick={onBack}
+          disabled={loading}
+          whileHover={{ opacity: 1, x: -5 }}
+        >
+          ← Change ID
+        </motion.button>
       </form>
     </motion.div>
   );

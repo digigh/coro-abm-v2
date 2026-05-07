@@ -60,17 +60,20 @@ const UploadStep = ({
       transition={{ type: 'spring', damping: 28, stiffness: 260 }}
       className="photos-step-container photos-upload-step"
     >
-      {/* User Identity Badge */}
       <motion.div
         className="photos-user-badge"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <div className="badge-avatar">{userData.name?.charAt(0)?.toUpperCase()}</div>
+        <div className="badge-avatar">
+          {userData.name?.charAt(0)?.toUpperCase() || 'U'}
+        </div>
         <div className="badge-info">
-          <span className="badge-name">{userData.name}</span>
-          <span className="badge-div">{userData.division} · {userData.business_unit}</span>
+          <div className="badge-name">{userData.name}</div>
+          <div className="badge-details">
+            {userData.division} <span className="badge-sep">•</span> {userData.business_unit}
+          </div>
         </div>
       </motion.div>
 
@@ -145,7 +148,9 @@ const UploadStep = ({
           transition={{ type: 'spring', stiffness: 400 }}
           className="dropzone-inner"
         >
-          <UploadCloud size={44} className={`dropzone-icon ${dragActive ? 'dz-icon-active' : ''}`} />
+          <div className="dropzone-icon-wrapper">
+            <UploadCloud size={40} className={`dropzone-icon ${dragActive ? 'dz-icon-active' : ''}`} />
+          </div>
           <h4>
             {dropzoneFull
               ? '2 photos selected — ready to submit'
@@ -205,14 +210,15 @@ const UploadStep = ({
 
       {/* Submit Button */}
       <motion.button
-        className={`photos-btn-upload ${canSubmit ? 'btn-upload-ready' : ''}`}
+        className="photos-btn-primary"
         onClick={onSubmit}
         disabled={!canSubmit}
-        whileHover={canSubmit ? { scale: 1.02, y: -2 } : {}}
-        whileTap={canSubmit ? { scale: 0.98 } : {}}
+        whileHover={canSubmit ? { scale: 1.05 } : {}}
+        whileTap={canSubmit ? { scale: 0.95 } : {}}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
+        style={{ marginTop: '1rem' }}
       >
         {isUploading ? (
           <>
@@ -224,7 +230,7 @@ const UploadStep = ({
             <ImageIcon size={22} />
             <span>
               {photos.length === 0
-                ? 'Select Photos to Submit'
+                ? 'Select Photos'
                 : `Submit ${readyCount} Photo${readyCount !== 1 ? 's' : ''}`}
             </span>
           </>

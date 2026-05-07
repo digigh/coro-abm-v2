@@ -1,149 +1,148 @@
-// ─────────────────────────────────────────────
-// PhotosScreen.jsx — Slim Step Orchestrator (v2)
-// ─────────────────────────────────────────────
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ChevronLeft, Camera, Upload, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
+import './PhotosAdventure.css';
 
-import useEmployeeAuth from '../hooks/useEmployeeAuth';
-import usePhotoUpload  from '../hooks/usePhotoUpload';
-import useDraftPersist, { loadDraft, clearDraft } from '../hooks/useDraftPersist';
-
-import EmployeeStep  from '../components/photos/EmployeeStep';
-import RegisterStep  from '../components/photos/RegisterStep';
-import UploadStep    from '../components/photos/UploadStep';
+// Components
+import EmployeeStep from '../components/photos/EmployeeStep';
+import RegisterStep from '../components/photos/RegisterStep';
+import UploadStep from '../components/photos/UploadStep';
 import SuccessScreen from '../components/photos/SuccessScreen';
+import AdventureBackground from '../components/photos/AdventureBackground';
 
-import './PhotosScreen.css';
-
-// Step indicator labels
-const STEPS = ['Verify', 'Profile', 'Upload'];
+// Hooks
+import useEmployeeAuth from '../hooks/useEmployeeAuth';
+import usePhotoUpload from '../hooks/usePhotoUpload';
 
 const PhotosScreen = ({ onBack }) => {
-  const [step, setStep]             = useState(1);
+  const [step, setStep] = useState(1);
   const [employeeId, setEmployeeId] = useState('');
-  const [userData, setUserData]     = useState({ name: '', division: '', business_unit: '' });
-  
-  useEffect(() => {
-    auth.clearError();
-  }, [step]);
+  const [userData, setUserData] = useState({ name: '', division: '', business_unit: '' });
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const auth   = useEmployeeAuth();
-  const upload = usePhotoUpload();
+  const carouselImages = [
+    '/inner_bg_vibrant.png',
+    '/carousel_1.png',
+    '/carousel_2.png'
+  ];
 
-  // ── Draft restore on mount ──
   useEffect(() => {
-    const draft = loadDraft();
-    if (draft) {
-      if (draft.employeeId) setEmployeeId(draft.employeeId);
-      if (draft.userData)   setUserData(draft.userData);
-      if (draft.step && draft.step <= 3) setStep(draft.step);
-    }
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % carouselImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
   }, []);
 
-  // ── Auto-save draft on every change ──
-  useDraftPersist({ step, employeeId, userData });
+  const { 
+    loading: authLoading, 
+    error: authError, 
+    checkEmployee, 
+    registerEmployee,
+    clearError: clearAuthError
+  } = useEmployeeAuth();
 
-  // ── Step 1: Check employee ──
-  const handleCheckEmployee = async (e) => {
-    e.preventDefault();
-    auth.clearError();
-    const result = await auth.checkEmployee(employeeId);
-    if (result.found) {
-      setUserData({
-        name:          result.data.name,
-        division:      result.data.division,
-        business_unit: result.data.business_unit
-      });
-      setStep(3);
-    } else if (!auth.error) {
-      // No error = user simply not found → show registration
-      setStep(2);
-    }
-  };
+  const {
+    photos,
+    isUploading,
+    globalError: uploadError,
+    processFiles,
+    removePhoto,
+    retryCompress,
+    uploadAll,
+    clearAll: resetUploads
+  } = usePhotoUpload();
 
-  // ── Step 2: Register new user ──
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    auth.clearError();
-    const result = await auth.registerEmployee(employeeId, userData);
-    if (result.success) setStep(3);
-  };
-
-  const handleUserDataChange = (key, value) => {
-    setUserData((prev) => ({ ...prev, [key]: value }));
-  };
-
-  // ── Step 3: Upload ──
-  const handleSubmit = () => {
-    upload.uploadAll(userData, employeeId);
-  };
-
-  const handleUploadMore = () => {
-    upload.clearAll();
-    // Stay on step 3 — user stays logged in
-  };
-
-  const handleBack = () => {
-    if (step > 1) {
+  const handleBackNavigation = () => {
+    if (step > 1 && step < 4) {
       setStep(step - 1);
-      auth.clearError();
+      clearAuthError();
     } else {
-      clearDraft();
       onBack();
     }
   };
 
-  const isDone = upload.uploadPhase === 'done';
+  const handleCheckEmployee = async (e) => {
+    if (e) e.preventDefault();
+    const result = await checkEmployee(employeeId);
+    if (result.found) {
+      setUserData(result.data);
+      setStep(3); // Skip registration if found
+    } else if (result.data === null && !authError) {
+      setStep(2); // Go to registration if not found
+    }
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    if (e) e.preventDefault();
+    const result = await registerEmployee(employeeId, userData);
+    if (result.success) setStep(3);
+  };
+
+  const handleUserDataChange = (key, value) => {
+    setUserData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const steps = [
+    { num: 1, label: 'Identity' },
+    { num: 2, label: 'Register' },
+    { num: 3, label: 'Upload' }
+  ];
 
   return (
     <div className="photos-screen-container">
-      {/* Ambient background */}
+      {/* Dynamic Adventure Background */}
       <div className="photos-bg-aurora" />
-      <div className="photos-bg-grid" />
+      <AdventureBackground />
 
       <div className="photos-content-wrapper">
-
-        {/* ── Header ── */}
-        <header className="photos-header">
-          <motion.button
-            className="photos-back-btn"
-            onClick={handleBack}
-            whileHover={{ scale: 1.1 }}
+        {/* Animated Header */}
+        <motion.header 
+          className="photos-header"
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: 'spring', damping: 20 }}
+        >
+          <motion.button 
+            className="photos-back-btn" 
+            onClick={handleBackNavigation}
+            whileHover={{ scale: 1.1, rotate: -10 }}
             whileTap={{ scale: 0.9 }}
-            aria-label="Go back"
           >
-            <ArrowLeft size={22} />
+            <ChevronLeft size={20} />
+            <span className="back-btn-text">Back</span>
           </motion.button>
-
-          <div className="photos-header-titles">
+          
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <h1 className="photos-title">Photo Contest</h1>
             <p className="photos-subtitle">ABM 2026 Summit · Share Your Moments</p>
-          </div>
-        </header>
+          </motion.div>
+        </motion.header>
 
-        {/* ── Step Progress Indicator ── */}
-        {!isDone && (
-          <motion.div
+        {/* Step Indicator */}
+        {step < 4 && (
+          <motion.div 
             className="step-progress"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
           >
-            {STEPS.map((label, i) => {
-              const stepNum    = i + 1;
-              const isActive   = step === stepNum;
-              const isComplete = step > stepNum;
+            {steps.map(({ num, label }, index) => {
+              const isActive = step === num;
+              const isComplete = step > num;
               return (
                 <React.Fragment key={label}>
                   <div className={`step-node ${isActive ? 'active' : ''} ${isComplete ? 'complete' : ''}`}>
                     <div className="step-circle">
-                      {isComplete ? '✓' : stepNum}
+                      <span>{isComplete ? '✓' : num}</span>
                     </div>
                     <span className="step-label">{label}</span>
                   </div>
-                  {i < STEPS.length - 1 && (
-                    <div className={`step-connector ${isComplete ? 'filled' : ''}`} />
+                  {index < steps.length - 1 && (
+                    <div className="step-connector" />
                   )}
                 </React.Fragment>
               );
@@ -151,54 +150,79 @@ const PhotosScreen = ({ onBack }) => {
           </motion.div>
         )}
 
-        {/* ── Main Card ── */}
-        <main className="photos-main-card glass-panel">
-          <AnimatePresence mode="wait">
+        {/* Main Glass Panel with Image Carousel */}
+        <motion.main 
+          className="glass-panel"
+          layout
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 120 }}
+        >
+          <div className="inner-carousel-container">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentImageIndex}
+                className="carousel-slide"
+                initial={{ opacity: 0, scale: 1.1 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
+                style={{ backgroundImage: `url(${carouselImages[currentImageIndex]})` }}
+              />
+            </AnimatePresence>
+            <div className="carousel-overlay" />
+          </div>
 
-            {isDone ? (
-              <SuccessScreen
-                key="success"
-                userData={userData}
-                onUploadMore={handleUploadMore}
-              />
-            ) : step === 1 ? (
-              <EmployeeStep
-                key="step1"
-                employeeId={employeeId}
-                onChange={setEmployeeId}
-                onSubmit={handleCheckEmployee}
-                loading={auth.loading}
-                error={auth.error}
-              />
-            ) : step === 2 ? (
-              <RegisterStep
-                key="step2"
-                employeeId={employeeId}
-                userData={userData}
-                onChange={handleUserDataChange}
-                onSubmit={handleRegister}
-                onBack={() => { setStep(1); auth.clearError(); }}
-                loading={auth.loading}
-                error={auth.error}
-              />
-            ) : (
-              <UploadStep
-                key="step3"
-                userData={userData}
-                photos={upload.photos}
-                isUploading={upload.isUploading}
-                uploadPhase={upload.uploadPhase}
-                globalError={upload.globalError}
-                onFilesSelected={upload.processFiles}
-                onRemove={upload.removePhoto}
-                onRetryCompress={upload.retryCompress}
-                onSubmit={handleSubmit}
-              />
-            )}
-
-          </AnimatePresence>
-        </main>
-
+          <div className="glass-panel-content">
+            <AnimatePresence mode="wait">
+              {step === 1 && (
+                <EmployeeStep 
+                  employeeId={employeeId}
+                  onChange={setEmployeeId}
+                  onSubmit={handleCheckEmployee}
+                  loading={authLoading}
+                  error={authError}
+                />
+              )}
+              {step === 2 && (
+                <RegisterStep 
+                  employeeId={employeeId}
+                  userData={userData}
+                  onChange={handleUserDataChange}
+                  onSubmit={handleRegisterSubmit}
+                  onBack={() => setStep(1)}
+                  loading={authLoading}
+                  error={authError}
+                />
+              )}
+              {step === 3 && (
+                <UploadStep 
+                  userData={{ employee_id: employeeId, ...userData }}
+                  photos={photos}
+                  isUploading={isUploading}
+                  globalError={uploadError}
+                  onFilesSelected={processFiles}
+                  onRemove={removePhoto}
+                  onRetryCompress={retryCompress}
+                  onSubmit={async () => {
+                    await uploadAll(userData, employeeId);
+                    setStep(4);
+                  }}
+                />
+              )}
+              {step === 4 && (
+                <SuccessScreen 
+                  userData={userData}
+                  onUploadMore={() => {
+                    resetUploads();
+                    setStep(3);
+                  }}
+                  onHome={onBack}
+                />
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.main>
       </div>
     </div>
   );
