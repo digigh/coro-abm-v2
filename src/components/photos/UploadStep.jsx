@@ -230,7 +230,7 @@ const UploadStep = ({
             <ImageIcon size={22} />
             <span>
               {photos.length === 0
-                ? 'Select Photos'
+                ? 'Upload'
                 : `Submit ${readyCount} Photo${readyCount !== 1 ? 's' : ''}`}
             </span>
           </>
