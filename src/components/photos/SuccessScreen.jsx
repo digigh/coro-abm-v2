@@ -18,8 +18,8 @@ const generateParticles = (count = 30) =>
     size: 4 + Math.random() * 6
   }));
 
-const SuccessScreen = ({ userData, onUploadMore }) => {
-  const [particles] = useState(() => generateParticles(36));
+const SuccessScreen = ({ userData, onUploadMore, onHome }) => {
+  const [particles] = useState(() => generateParticles(45));
   const [showMsg, setShowMsg]   = useState(false);
 
   useEffect(() => {
@@ -128,18 +128,32 @@ const SuccessScreen = ({ userData, onUploadMore }) => {
           <span>Submitted by <strong>{userData?.name}</strong> · {userData?.division}</span>
         </motion.div>
 
-        {/* Upload More Button */}
-        <motion.button
-          className="photos-btn-secondary success-more-btn"
-          onClick={onUploadMore}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-        >
-          Upload Another Photo
-        </motion.button>
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', alignItems: 'center' }}>
+          <motion.button
+            className="success-more-btn"
+            onClick={onUploadMore}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            <Camera size={20} />
+            <span>Upload Another Photo</span>
+          </motion.button>
+
+          <motion.button
+            className="photos-btn-secondary-text"
+            onClick={onHome}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            style={{ marginTop: '0.5rem' }}
+          >
+            Return to Dashboard
+          </motion.button>
+        </div>
       </div>
     </motion.div>
   );

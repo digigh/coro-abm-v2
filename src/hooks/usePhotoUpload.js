@@ -16,6 +16,8 @@ const UPLOAD_API_URL   = import.meta.env.VITE_UPLOAD_API_URL || '';
 const UPLOAD_API_TOKEN = import.meta.env.VITE_UPLOAD_API_TOKEN || '';
 const MAX_PHOTOS       = 2;
 
+console.info('[usePhotoUpload] Hook loaded with URL:', UPLOAD_API_URL ? 'PRESENT' : 'MISSING', 'Token:', UPLOAD_API_TOKEN ? 'PRESENT' : 'MISSING');
+
 // Photo status lifecycle:
 // idle → compressing → ready → uploading → success | error
 
@@ -124,10 +126,17 @@ const usePhotoUpload = () => {
    * Includes minimum delay for UX and Supabase write settling.
    */
   const uploadAll = useCallback(async (userData, employeeId) => {
+    console.log('[usePhotoUpload] uploadAll initiated', { userData, employeeId, photosCount: photos.length });
+
     // Guard against double-clicks
-    if (isUploadingRef.current) return;
+    if (isUploadingRef.current) {
+      console.warn('[usePhotoUpload] Upload already in progress, ignoring.');
+      return;
+    }
 
     const readyPhotos = photos.filter((p) => p.status === 'ready');
+    console.log('[usePhotoUpload] Ready photos:', readyPhotos.length);
+
     if (readyPhotos.length === 0) {
       setGlobalError('Please select at least one photo first.');
       return;
@@ -138,10 +147,18 @@ const usePhotoUpload = () => {
       return;
     }
 
+    console.log('[usePhotoUpload] Guards passed, starting upload...');
     setGlobalError('');
     setIsUploading(true);
     setUploadPhase('uploading');
     isUploadingRef.current = true;
+
+    if (!UPLOAD_API_URL) {
+      setGlobalError('Upload API URL is not configured.');
+      setIsUploading(false);
+      isUploadingRef.current = false;
+      return;
+    }
 
     // Mark each photo as uploading
     readyPhotos.forEach((p) => updatePhoto(p.id, { status: 'uploading' }));
@@ -163,20 +180,13 @@ const usePhotoUpload = () => {
       // Run upload + minimum delay in parallel — whichever takes longer wins
       await Promise.all([
         retryWithBackoff(async () => {
-          const isDemoMode = !UPLOAD_API_URL || UPLOAD_API_URL.includes('example.com');
-
-          if (isDemoMode) {
-            // Demo mode: simulate network latency
-            await new Promise((r) => setTimeout(r, 800));
-            console.info('[usePhotoUpload] Demo mode — payload:', payload);
-            return;
-          }
+          console.info('[usePhotoUpload] Sending payload to:', UPLOAD_API_URL, payload);
 
           const res = await fetch(UPLOAD_API_URL, {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
-              'token': UPLOAD_API_TOKEN
+              'Authorization': `Bearer ${UPLOAD_API_TOKEN}`
             },
             body: JSON.stringify(payload),
             signal: AbortSignal.timeout(30000) // 30s timeout
@@ -187,6 +197,8 @@ const usePhotoUpload = () => {
           }
 
           const result = await res.json();
+          console.info('[usePhotoUpload] Server response:', result);
+
           if (!result.status) {
             throw new Error(result.message || 'Upload failed');
           }
@@ -202,10 +214,11 @@ const usePhotoUpload = () => {
       setUploadPhase('done');
 
     } catch (err) {
-      console.error('[usePhotoUpload] upload failed:', err);
+      console.error('[usePhotoUpload] CRITICAL UPLOAD ERROR:', err);
       readyPhotos.forEach((p) => updatePhoto(p.id, { status: 'error', error: 'Upload failed. Tap retry.' }));
-      setGlobalError('Upload failed. Please check your connection and try again.');
+      setGlobalError(`Upload failed: ${err.message}`);
       setUploadPhase('idle');
+      throw err; // Re-throw so the caller (PhotosScreen) knows it failed
     } finally {
       setIsUploading(false);
       isUploadingRef.current = false;

@@ -205,8 +205,12 @@ const PhotosScreen = ({ onBack }) => {
                   onRemove={removePhoto}
                   onRetryCompress={retryCompress}
                   onSubmit={async () => {
-                    await uploadAll(userData, employeeId);
-                    setStep(4);
+                    try {
+                      await uploadAll(userData, employeeId);
+                      setStep(4);
+                    } catch (err) {
+                      console.error('[PhotosScreen] Upload failed, staying on step 3:', err);
+                    }
                   }}
                 />
               )}
