@@ -12,8 +12,9 @@ import {
   minimumDelay
 } from '../utils/uploadUtils';
 
-const UPLOAD_API_URL = import.meta.env.VITE_UPLOAD_API_URL || '';
-const MAX_PHOTOS     = 2;
+const UPLOAD_API_URL   = import.meta.env.VITE_UPLOAD_API_URL || '';
+const UPLOAD_API_TOKEN = import.meta.env.VITE_UPLOAD_API_TOKEN || '';
+const MAX_PHOTOS       = 2;
 
 // Photo status lifecycle:
 // idle → compressing → ready → uploading → success | error
@@ -173,13 +174,21 @@ const usePhotoUpload = () => {
 
           const res = await fetch(UPLOAD_API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'token': UPLOAD_API_TOKEN
+            },
             body: JSON.stringify(payload),
             signal: AbortSignal.timeout(30000) // 30s timeout
           });
 
           if (!res.ok) {
             throw new Error(`Server error ${res.status}: ${res.statusText}`);
+          }
+
+          const result = await res.json();
+          if (!result.status) {
+            throw new Error(result.message || 'Upload failed');
           }
         }, 3),
 
