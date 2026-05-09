@@ -489,6 +489,10 @@
   background: linear-gradient(to bottom, rgba(2, 245, 161, 0.3), transparent);
 }
 
+.activity-item.clickable {
+  cursor: pointer;
+}
+
 .activity-item {
   display: flex;
   gap: 40px;

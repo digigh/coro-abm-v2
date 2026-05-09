@@ -291,10 +291,11 @@ const ItineraryShowcase = ({ batch, initialDay = 1, onBack }) => {
                   return (
                     <motion.div 
                       key={i} 
-                      className="activity-item"
+                      className={`activity-item ${act.map ? 'clickable' : ''}`}
                       initial={{ opacity: 0, x: -30 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.1 }}
+                      onClick={() => act.map && window.open(act.map, '_blank', 'noopener,noreferrer')}
                     >
                     <div className="rhombus-node-wrap">
                       <div className="rhombus-node">

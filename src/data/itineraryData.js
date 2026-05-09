@@ -42,7 +42,7 @@ export const DEFAULT_BATCH_DATA = {
         title: "City Tour & Ocean Park",
         activities: [
           { time: "Morning", text: "Hong Kong City Tour – Victoria Peak", icon: "Compass", map: "https://www.google.com/maps/search/?api=1&query=Victoria+Peak+Hong+Kong", image: "/opt_landmarks.png" },
-          { time: "Afternoon", text: "Trip to Ocean Park", icon: "Star", map: "https://www.google.com/maps/search/?api=1&query=Ocean+Park+Hong+Kong", image: "/opt_landmarks.png" },
+          { time: "Afternoon", text: "Trip to Ocean Park", icon: "Star", map: "http://map.oceanpark.com.hk/?scale=1.00&lang=en&list=false&category=attractions", image: "/opt_landmarks.png" },
           { time: "08:00 PM", text: "Dinner at Indian Restaurant", icon: "Utensils", image: "/opt_hotels.png" }
         ],
         footer: "OVERNIGHT STAY AT HARBOUR GRAND KOWLOON"
@@ -136,7 +136,7 @@ export const DEFAULT_BATCH_DATA = {
         title: "City Tour & Ocean Park",
         activities: [
           { time: "Morning", text: "Hong Kong City Tour – Victoria Peak", icon: "Compass", map: "https://www.google.com/maps/search/?api=1&query=Victoria+Peak+Hong+Kong", image: "/opt_landmarks.png" },
-          { time: "Afternoon", text: "Trip to Ocean Park", icon: "Star", map: "https://www.google.com/maps/search/?api=1&query=Ocean+Park+Hong+Kong", image: "/opt_landmarks.png" },
+          { time: "Afternoon", text: "Trip to Ocean Park", icon: "Star", map: "http://map.oceanpark.com.hk/?scale=1.00&lang=en&list=false&category=attractions", image: "/opt_landmarks.png" },
           { time: "08:00 PM", text: "Dinner at Indian Restaurant", icon: "Utensils", image: "/opt_hotels.png" }
         ],
         footer: "OVERNIGHT STAY AT HARBOUR GRAND KOWLOON"

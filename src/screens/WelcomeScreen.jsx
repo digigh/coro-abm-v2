@@ -11,6 +11,7 @@ import kowloonImg from '../assets/destinations/kowloon.png';
 import oceanParkImg from '../assets/destinations/oceanpark.png';
 import victoriaPeakImg from '../assets/destinations/victoria_peak.png';
 import PhotosScreen from './PhotosScreen';
+import GalleryScreen from './GalleryScreen';
 
 const carouselData = [
   {
@@ -125,7 +126,8 @@ const galaData = [
     title: "Ocean Park",
     desc: "Experience thrilling rides and spectacular fireworks.",
     icon: <Star size={32} />,
-    target: { batch: 1, day: 2, highlight: "Ocean Park" }
+    target: { batch: 1, day: 2, highlight: "Ocean Park" },
+    externalLink: "http://map.oceanpark.com.hk/?scale=1.00&lang=en&list=false&category=attractions"
   }
 ];
 
@@ -276,6 +278,7 @@ const WelcomeScreen = ({ onNext }) => {
   const [showCommittee, setShowCommittee] = useState(false);
   const [showAwards, setShowAwards] = useState(false);
   const [showPhotos, setShowPhotos] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
 
   const currentImageIndex = Math.abs(page % carouselData.length);
   const currentData = carouselData[currentImageIndex];
@@ -340,6 +343,10 @@ const WelcomeScreen = ({ onNext }) => {
     }
     if (title === 'Photos') {
       setShowPhotos(true);
+      return;
+    }
+    if (title === 'Gallery') {
+      setSoonModal({ isOpen: true, title: 'Legacy Gallery' });
       return;
     }
     setSoonModal({ isOpen: true, title });
@@ -588,7 +595,18 @@ const WelcomeScreen = ({ onNext }) => {
 
         <div id="experiences" className="summit-features-grid">
           {/* Left Column: Mini Carousel */}
-           <div className="mini-carousel-container" onClick={() => setShowBatches(currentGala.target)} role="button" tabIndex={0}>
+           <div 
+            className="mini-carousel-container" 
+            onClick={() => {
+              if (currentGala.externalLink) {
+                window.open(currentGala.externalLink, '_blank', 'noopener,noreferrer');
+              } else {
+                setShowBatches(currentGala.target);
+              }
+            }} 
+            role="button" 
+            tabIndex={0}
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={`gala-${galaPage}`}
@@ -710,6 +728,19 @@ const WelcomeScreen = ({ onNext }) => {
             style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
           >
             <PhotosScreen onBack={() => setShowPhotos(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showGallery && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
+          >
+            <GalleryScreen onBack={() => setShowGallery(false)} />
           </motion.div>
         )}
       </AnimatePresence>

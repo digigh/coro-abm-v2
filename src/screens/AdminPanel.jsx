@@ -568,7 +568,18 @@ export default function AdminPanel({ onExit }) {
                                 }}
                               />
                               <div className="form-group" style={{ marginTop: '10px' }}>
-                                <label style={{ fontSize: '0.7rem' }}>Map Link (Optional)</label>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <label style={{ fontSize: '0.7rem' }}>Map Link (Optional)</label>
+                                  {act.map && (
+                                    <button 
+                                      onClick={() => window.open(act.map, '_blank')}
+                                      style={{ background: 'none', border: 'none', color: '#fbbf24', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                      title="Test Link"
+                                    >
+                                      <ExternalLink size={12} />
+                                    </button>
+                                  )}
+                                </div>
                                 <input 
                                   type="text"
                                   placeholder="Google Maps URL"
