@@ -346,7 +346,7 @@ const WelcomeScreen = ({ onNext }) => {
       return;
     }
     if (title === 'Gallery') {
-      setSoonModal({ isOpen: true, title: 'Legacy Gallery' });
+      setShowGallery(true);
       return;
     }
     setSoonModal({ isOpen: true, title });
