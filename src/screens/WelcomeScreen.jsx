@@ -1,0 +1,752 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, Star, Crown, Clock, Compass, X, Calendar, MapPin, ChevronRight, Sparkles, Rocket } from 'lucide-react';
+import './WelcomeScreen.css';
+import SoonModal from '../components/SoonModal';
+import BatchesScreen from './BatchesScreen';
+import CommitteeScreen from './CommitteeScreen';
+import AwardsScreen from './AwardsScreen';
+import venetianImg from '../assets/destinations/venetian.png';
+import kowloonImg from '../assets/destinations/kowloon.png';
+import oceanParkImg from '../assets/destinations/oceanpark.png';
+import victoriaPeakImg from '../assets/destinations/victoria_peak.png';
+import PhotosScreen from './PhotosScreen';
+import GalleryScreen from './GalleryScreen';
+
+const carouselData = [
+  {
+    id: 'hk',
+    image: kowloonImg,
+    leftTitle: "ABM 2026 SUMMIT",
+    leftSubtitle: "Macau & Hong Kong",
+    leftDesc: "8–14 May 2026. A journey of strategic growth, innovation, and extraordinary experiences.",
+    rightTitle: "ACCELERATE YOUR PATH —",
+    rightSubtitle: "we'll handle the logistics.",
+    rightDesc: "so you can focus on networking and exploration."
+  },
+  {
+    id: 'venetian',
+    image: venetianImg,
+    leftTitle: "THE VENETIAN",
+    leftSubtitle: "Grand Gala",
+    leftDesc: "Experience a night of absolute prestige and celebration at the Venetian Grand Ball Room.",
+    rightTitle: "Immerse in luxury –",
+    rightSubtitle: "we curate the experience.",
+    rightDesc: "From five-star hospitality to world-class entertainment, every moment is designed to inspire."
+  },
+  {
+    id: 'ocean',
+    image: oceanParkImg,
+    leftTitle: "OCEAN PARK",
+    leftSubtitle: "Thrills Await",
+    leftDesc: "Connect with nature, embrace the thrill of the rides, and enjoy a spectacular fireworks show.",
+    rightTitle: "Unleash the adventure –",
+    rightSubtitle: "we secure the access.",
+    rightDesc: "A world-class experience blending breathtaking scenery with unforgettable team-building moments."
+  },
+  {
+    id: 'peak',
+    image: victoriaPeakImg,
+    leftTitle: "VICTORIA PEAK",
+    leftSubtitle: "The Summit View",
+    leftDesc: "Witness the iconic skyline after an exhilarating high-speed ferry crossing.",
+    rightTitle: "Elevate your perspective –",
+    rightSubtitle: "we elevate the journey.",
+    rightDesc: "Stand at the pinnacle of Asia's world city, where strategic vision meets breathtaking altitude."
+  }
+];
+
+const slideVariants = {
+  enter: (direction) => ({
+    x: direction > 0 ? 1000 : -1000,
+    opacity: 0,
+    scale: 1.05
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    scale: 1
+  },
+  exit: (direction) => ({
+    zIndex: 0,
+    x: direction < 0 ? 1000 : -1000,
+    opacity: 0,
+    scale: 0.95
+  })
+};
+
+const textVariants = {
+  enter: { y: 20, opacity: 0 },
+  center: { y: 0, opacity: 1 },
+  exit: { y: -20, opacity: 0 }
+};
+
+const GifTransition = () => (
+  <div className="gif-transition-overlay" key="gif-overlay">
+    <img
+      src="/stars_anime.gif"
+      className="gif-asset"
+      alt="Transitioning..."
+    />
+  </div>
+);
+const galaData = [
+  {
+    id: 'venetian',
+    image: venetianImg,
+    title: "Venetian Gala",
+    desc: "A night of prestige and celebration at the Venetian Grand Ball Room.",
+    icon: <Crown size={32} />,
+    target: { batch: 1, day: 4, highlight: "Venetian" }
+  },
+  {
+    id: 'peak',
+    image: victoriaPeakImg,
+    title: "The Peak View",
+    desc: "Witness the iconic skyline from the pinnacle of Asia's world city.",
+    icon: (
+      <div className="fiery-3d-core-container">
+        <div className="core-3d-ring ring-3d-x"></div>
+        <div className="core-3d-ring ring-3d-y"></div>
+        <div className="core-3d-ring ring-3d-z"></div>
+        <div className="fire-heart">
+          <div className="fire-layer layer-1"></div>
+          <div className="fire-layer layer-2"></div>
+          <div className="fire-layer layer-3"></div>
+          <div className="plasma-center"></div>
+        </div>
+      </div>
+    ),
+    target: { batch: 1, day: 3, highlight: "Peak" }
+  },
+  {
+    id: 'ocean',
+    image: oceanParkImg,
+    title: "Ocean Park",
+    desc: "Experience thrilling rides and spectacular fireworks.",
+    icon: <Star size={32} />,
+    target: { batch: 1, day: 2, highlight: "Ocean Park" },
+    externalLink: "http://map.oceanpark.com.hk/?scale=1.00&lang=en&list=false&category=attractions"
+  }
+];
+
+const BATCH_DATA_MINI = {
+  1: {
+    id: 1,
+    title: "Batch 1",
+    group: "GROUP 1",
+    dates: "08–12 May 2026",
+    image: "/batch1_bg.png",
+    desc: "Explore Lantau, Ocean Park, and the Grand Venetian Gala."
+  },
+  2: {
+    id: 2,
+    title: "Batch 2",
+    group: "GROUP 2",
+    dates: "10–14 May 2026",
+    image: "/batch2_bg.png",
+    desc: "Experience Macau's heritage, Strategic Summit, and HK Skyline."
+  }
+};
+
+const BatchCardMini = ({ data, onClick }) => (
+  <motion.div 
+    className="batch-card-mini"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    whileHover={{ y: -10, scale: 1.02 }}
+    onClick={onClick}
+  >
+    <div className="mini-card-bg">
+      <img src={data.image} alt={data.title} />
+      <div className="mini-card-overlay" />
+    </div>
+    <div className="mini-card-content">
+      <div className="mini-card-badge">{data.group}</div>
+      <h3>{data.title}</h3>
+      <div className="mini-card-stats">
+        <Calendar size={14} /> <span>{data.dates}</span>
+      </div>
+      <p>{data.desc}</p>
+      <div className="mini-card-footer">
+        VIEW ITINERARY <ChevronRight size={16} />
+      </div>
+    </div>
+  </motion.div>
+);
+
+const AnimatedNumber = ({ value }) => (
+  <div className="animated-number-wrapper">
+    <AnimatePresence mode="popLayout">
+      <motion.span
+        key={value}
+        initial={{ y: 20, opacity: 0, scale: 0.8 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: -20, opacity: 0, scale: 0.8 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        className="timer-value"
+      >
+        {value}
+      </motion.span>
+    </AnimatePresence>
+  </div>
+);
+
+const CountdownTimer = () => {
+  const calculateTimeLeft = () => {
+    const difference = +new Date('2026-05-11T00:00:00') - +new Date();
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    } else {
+      timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+
+    return timeLeft;
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  });
+
+  const formatNumber = (num) => {
+    return num.toString().padStart(2, '0');
+  };
+
+  return (
+    <motion.div
+      className="cool-timer-container"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+    >
+      <div className="timer-block">
+        <div className="timer-block-bg"></div>
+        <div className="timer-block-inner">
+          <AnimatedNumber value={formatNumber(timeLeft.days)} />
+          <span className="timer-label">DAYS</span>
+        </div>
+      </div>
+      <span className="timer-separator">:</span>
+      <div className="timer-block">
+        <div className="timer-block-bg"></div>
+        <div className="timer-block-inner">
+          <AnimatedNumber value={formatNumber(timeLeft.hours)} />
+          <span className="timer-label">HOURS</span>
+        </div>
+      </div>
+      <span className="timer-separator">:</span>
+      <div className="timer-block">
+        <div className="timer-block-bg"></div>
+        <div className="timer-block-inner">
+          <AnimatedNumber value={formatNumber(timeLeft.minutes)} />
+          <span className="timer-label">MINUTES</span>
+        </div>
+      </div>
+      <span className="timer-separator">:</span>
+      <div className="timer-block">
+        <div className="timer-block-bg"></div>
+        <div className="timer-block-inner">
+          <AnimatedNumber value={formatNumber(timeLeft.seconds)} />
+          <span className="timer-label">SECONDS</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const WelcomeScreen = ({ onNext }) => {
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showBatches, setShowBatches] = useState(false);
+  const [[page, direction], setPage] = useState([0, 1]);
+  const [[galaPage, galaDirection], setGalaPage] = useState([0, 1]);
+  const [soonModal, setSoonModal] = useState({ isOpen: false, title: '' });
+  const [showCommittee, setShowCommittee] = useState(false);
+  const [showAwards, setShowAwards] = useState(false);
+  const [showPhotos, setShowPhotos] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+
+  const currentImageIndex = Math.abs(page % carouselData.length);
+  const currentData = carouselData[currentImageIndex];
+  const currentGalaIndex = Math.abs(galaPage % galaData.length);
+  const currentGala = galaData[currentGalaIndex];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPage([page + 1, 1]);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [page]);
+
+  useEffect(() => {
+    const galaInterval = setInterval(() => {
+      setGalaPage([galaPage + 1, 1]);
+    }, 4000);
+    return () => clearInterval(galaInterval);
+  }, [galaPage]);
+
+  const handleRegister = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setTimeout(() => {
+      onNext();
+    }, 5000);
+  };
+
+  const handleDotClick = (index) => {
+    if (index > currentImageIndex) {
+      setPage([index, 1]);
+    } else if (index < currentImageIndex) {
+      setPage([index, -1]);
+    }
+  };
+
+  const handleMenuToggle = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const scrollToSection = (e, sectionId) => {
+    e.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleSoonClick = (title, payload = null) => {
+    if (title === 'Batches') {
+      setShowBatches(payload || true);
+      return;
+    }
+    if (title === 'Core Committee') {
+      setShowCommittee(true);
+      return;
+    }
+    if (title === 'Awards') {
+      setShowAwards(true);
+      return;
+    }
+    if (title === 'Photos') {
+      setShowPhotos(true);
+      return;
+    }
+    if (title === 'Gallery') {
+      setShowGallery(true);
+      return;
+    }
+    setSoonModal({ isOpen: true, title });
+  };
+
+  return (
+    <div className={`welcome-screen ${isTransitioning ? 'pointer-events-none' : ''}`}>
+      <AnimatePresence>
+        {isTransitioning && <GifTransition />}
+      </AnimatePresence>
+
+      {/* --- HERO SECTION --- */}
+      <section className="hero-section">
+        <div className="carousel-container">
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.img
+              key={page}
+              src={currentData.image}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.4 },
+                scale: { duration: 0.6 }
+              }}
+              className="carousel-image"
+              alt="Destination"
+            />
+          </AnimatePresence>
+          <div className="carousel-overlay"></div>
+        </div>
+
+        {/* --- TOP NAVIGATION --- */}
+        <header className="top-nav">
+          <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ cursor: 'pointer' }}>
+            <img src="/final_main_logo.png" alt="Coromandel Logo" />
+          </div>
+          <nav className="nav-links glass-strip-nav">
+            <button className="nav-btn-link" onClick={(e) => scrollToSection(e, 'overview')}>OVERVIEW</button>
+            <button className="nav-btn-link" onClick={(e) => scrollToSection(e, 'experiences')}>EXPERIENCES</button>
+            <button className="nav-btn-link" onClick={() => handleSoonClick('Awards')}>AWARDS</button>
+            <button className="nav-btn-link" onClick={() => handleSoonClick('Gallery')}>GALLERY</button>
+            <button className="nav-btn-link" onClick={() => handleSoonClick('Batches')}>BATCHES</button>
+            <button className="nav-btn-link" onClick={() => handleSoonClick('Core Committee')}>COMMITTEE</button>
+            <button className="nav-btn-link" onClick={() => handleSoonClick('Photos')}>PHOTOS</button>
+          </nav>
+          
+          <div className="nav-actions central-trigger-wrap">
+            <motion.div 
+              className="trigger-composition"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <motion.button 
+                className="summit-menu-trigger interesting-trigger" 
+                onClick={handleMenuToggle}
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                <div className="graphical-3d-neon-engine">
+                  <div className="neon-3d-orbit orbit-hk-red" />
+                  <div className="neon-3d-orbit orbit-macao-green" />
+                  <div className="neon-3d-orbit orbit-summit-gold" />
+                  <div className="neon-crystal-core">
+                    <div className="crystal-shine" />
+                    <div className="plasma-pulse" />
+                  </div>
+                  <div className="cyber-spark s1" />
+                  <div className="cyber-spark s2" />
+                  <div className="cyber-spark s3" />
+                </div>
+                <div className="trigger-glow-ring" />
+              </motion.button>
+              <span className="trigger-label">EXPLORE</span>
+            </motion.div>
+          </div>
+
+          
+          {/* Immersive Mobile Menu Overlay */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                className="mobile-immersive-menu"
+                initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                animate={{ opacity: 1, backdropFilter: 'blur(20px)' }}
+                exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="mobile-menu-bg-aurora" />
+                <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)}>
+                  <X size={32} />
+                </button>
+                
+                <nav className="mobile-nav-container">
+                  {[
+                    { label: 'OVERVIEW', id: 'overview' },
+                    { label: 'EXPERIENCES', id: 'experiences' },
+                    { label: 'AWARDS', type: 'Awards' },
+                    { label: 'GALLERY', type: 'Gallery' },
+                    { label: 'BATCHES', type: 'Batches' },
+                    { label: 'COMMITTEE', type: 'Core Committee' },
+                    { label: 'PHOTOS', type: 'Photos' }
+                  ].map((item, idx) => (
+                    <motion.button
+                      key={item.label}
+                      className="mobile-nav-item"
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 + idx * 0.05, duration: 0.4 }}
+                      onClick={(e) => {
+                        setIsMobileMenuOpen(false);
+                        item.id ? scrollToSection(e, item.id) : handleSoonClick(item.type);
+                      }}
+                    >
+                      <span className="item-number">0{idx + 1}</span>
+                      <span className="item-label">{item.label}</span>
+                      <div className="item-underline" />
+                    </motion.button>
+                  ))}
+                </nav>
+
+                <div className="mobile-menu-footer">
+                  <p>ABM 2026 · MACAU & HONG KONG</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+        </header>
+
+        {/* --- GIANT TYPOGRAPHY --- */}
+        <div className="hero-center-text">
+          <div className="hero-main-image-container">
+            <img src="/hk_macao_logo_ms.png" className="hero-main-summit-image" alt="Summit Theme" />
+          </div>
+
+          {/* --- RELOCATED MOVING TICKER STRIP (THIN & GOLDEN) --- */}
+          <div className="hero-moving-ticker-separator">
+            <div className="ticker-content">
+              {[...Array(6)].map((_, i) => (
+                <span key={i} className="ticker-text-gold">
+                  WELCOME TO COROMANDEL ANNUAL MEET 2026 <span className="ticker-bullet-gold">•</span> 
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="hero-title-container">
+            <div className="tree-unit-container">
+              <img src="/tree-logo.png" className="hero-side-logo" alt="Growth Tree Logo" />
+              <div className="logo-shine-overlay" />
+            </div>
+            <h1 className="modern-shimmer-title">
+              <span className="line-one shimmer-text">CONSOLIDATE</span>
+              <span className="line-two">TO <span className="shimmer-text">ACCELERATE</span></span>
+            </h1>
+          </div>
+          
+          <CountdownTimer />
+        </div>
+
+        {/* --- BATCHES OVERLAY --- */}
+        <div className="hero-panels-wrapper">
+          <div className="hero-bottom-left">
+            <BatchCardMini data={BATCH_DATA_MINI[1]} onClick={() => handleSoonClick('Batches', { batch: 1 })} />
+          </div>
+
+          <div className="hero-bottom-right-text">
+            <BatchCardMini data={BATCH_DATA_MINI[2]} onClick={() => handleSoonClick('Batches', { batch: 2 })} />
+          </div>
+        </div>
+
+
+        {/* --- CAROUSEL POINTERS --- */}
+        <div className="carousel-dots">
+          {carouselData.map((_, idx) => (
+            <button
+              key={idx}
+              className={`dot ${idx === currentImageIndex ? 'active' : ''}`}
+              onClick={() => handleDotClick(idx)}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* --- SVG Gradient Defs --- */}
+      <svg style={{ width: 0, height: 0, position: 'absolute' }} aria-hidden="true" focusable="false">
+        <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#f59e0b" />
+          <stop offset="100%" stopColor="#fbbf24" />
+        </linearGradient>
+      </svg>
+
+
+      {/* --- PROFESSIONAL SUMMIT SECTION --- */}
+      <section id="overview" className="professional-summit-section">
+        {/* Elegant Mesh, Illustration & Shine Background */}
+        <div className="summit-bg-gradient"></div>
+        <div className="summit-illustration-overlay"></div>
+        <div className="summit-shine-sweep"></div>
+
+        <div className="summit-intro">
+          <h2>SUMMIT OVERVIEW</h2>
+          <p>An elite, high-performance schedule meticulously crafted for Coromandel leadership.</p>
+        </div>
+
+        <div className="summit-stats-row">
+          <div className="s-stat">
+            <span className="s-num">5</span>
+            <div className="s-details">
+              <span className="s-title">Days</span>
+              <span className="s-sub">Programme</span>
+            </div>
+          </div>
+          <div className="s-line"></div>
+          <div className="s-stat">
+            <span className="s-num">2</span>
+            <div className="s-details">
+              <span className="s-title">Cities</span>
+              <span className="s-sub">HK + Macau</span>
+            </div>
+          </div>
+          <div className="s-line"></div>
+          <div className="s-stat">
+            <span className="s-num">2</span>
+            <div className="s-details">
+              <span className="s-title">Groups</span>
+              <span className="s-sub">Batches</span>
+            </div>
+          </div>
+          <div className="s-line"></div>
+          <div className="s-stat">
+            <span className="s-num star-icon-container">
+              <Star size={44} fill="url(#gold-grad)" stroke="none" />
+            </span>
+            <div className="s-details">
+              <span className="s-title">5 Star</span>
+              <span className="s-sub">Hospitality</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="experiences" className="summit-features-grid">
+          {/* Left Column: Mini Carousel */}
+           <div 
+            className="mini-carousel-container" 
+            onClick={() => {
+              if (currentGala.externalLink) {
+                window.open(currentGala.externalLink, '_blank', 'noopener,noreferrer');
+              } else {
+                setShowBatches(currentGala.target);
+              }
+            }} 
+            role="button" 
+            tabIndex={0}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`gala-${galaPage}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                style={{ width: '100%', height: '100%' }}
+              >
+                <motion.img
+                  src={currentGala.image}
+                  initial={{ scale: 1.1 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 1.2 }}
+                  className="mini-carousel-img"
+                  alt={currentGala.title}
+                />
+                <div className="mini-carousel-caption">
+                  <div className="ed-icon prof-gold mini-icon">{currentGala.icon}</div>
+                  <div className="mini-caption-text">
+                    <motion.h3
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      {currentGala.title}
+                    </motion.h3>
+                    <motion.p
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      {currentGala.desc}
+                    </motion.p>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Right Column: Feature Boxes */}
+          <div className="features-right-column">
+            <div className="feature-box">
+              <div className="f-box-icon prof-blue"><Clock size={40} /></div>
+              <div className="f-box-text">
+                <h3>70+ Hours</h3>
+                <p>Curated experiences from Ocean Park to the Diamond Show.</p>
+              </div>
+            </div>
+
+            <div className="feature-box">
+              <div className="f-box-icon prof-silver"><Compass size={40} /></div>
+              <div className="f-box-text">
+                <h3>6+ Sites</h3>
+                <p>Journey through landmarks of global innovation.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- SOON MODAL --- */}
+      <SoonModal 
+        isOpen={soonModal.isOpen} 
+        onClose={() => setSoonModal({ ...soonModal, isOpen: false })} 
+        title={soonModal.title} 
+      />
+
+      <AnimatePresence>
+        {showBatches && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
+          >
+            <BatchesScreen 
+              initialBatch={typeof showBatches === 'object' ? showBatches.batch : null}
+              initialDay={typeof showBatches === 'object' ? showBatches.day : 1}
+              highlight={typeof showBatches === 'object' ? showBatches.highlight : null}
+              onBack={() => setShowBatches(false)} 
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showCommittee && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
+          >
+            <CommitteeScreen onBack={() => setShowCommittee(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showAwards && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
+          >
+            <AwardsScreen onBack={() => setShowAwards(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showPhotos && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
+          >
+            <PhotosScreen onBack={() => setShowPhotos(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showGallery && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 3000 }}
+          >
+            <GalleryScreen onBack={() => setShowGallery(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+    </div>
+  );
+};
+
+export default WelcomeScreen;
