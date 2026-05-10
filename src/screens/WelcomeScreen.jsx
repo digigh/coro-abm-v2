@@ -193,9 +193,54 @@ const AnimatedNumber = ({ value }) => (
   </div>
 );
 
+const TARGET_DATE = '2026-05-11T06:30:00';
+
+const CelebrationGraphics = () => {
+  return (
+    <div className="celebration-overlay">
+      {[...Array(80)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="celebration-particle"
+          initial={{ 
+            left: '50%', 
+            top: '50%', 
+            scale: 0,
+            rotate: 0,
+            opacity: 1
+          }}
+          animate={{ 
+            left: `${Math.random() * 100}%`, 
+            top: `${Math.random() * 100}%`, 
+            scale: [0, 1.2, 1, 0],
+            rotate: Math.random() * 720,
+            opacity: [1, 1, 0]
+          }}
+          transition={{ 
+            duration: 2.5 + Math.random() * 1.5, 
+            ease: "easeOut",
+            delay: Math.random() * 0.3
+          }}
+          style={{
+            backgroundColor: ['#f59e0b', '#ef4444', '#10b981', '#3b82f6', '#8b5cf6', '#ffffff'][Math.floor(Math.random() * 6)],
+            width: Math.random() * 12 + 6,
+            height: Math.random() * 12 + 6,
+            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+            position: 'fixed',
+            zIndex: 10000,
+            boxShadow: '0 0 10px rgba(255,255,255,0.5)',
+            pointerEvents: 'none'
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 const CountdownTimer = () => {
   const calculateTimeLeft = () => {
-    const difference = +new Date('2026-05-11T00:00:00') - +new Date();
+    const difference = +new Date(TARGET_DATE) - +new Date();
+
     let timeLeft = {};
 
     if (difference > 0) {
@@ -215,18 +260,22 @@ const CountdownTimer = () => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
 
-    return () => clearTimeout(timer);
-  });
+    return () => clearInterval(timer);
+  }, []);
+
+  const difference = +new Date(TARGET_DATE) - +new Date();
+  if (difference <= 0) return null;
 
   const formatNumber = (num) => {
     return num.toString().padStart(2, '0');
   };
 
   return (
+
     <motion.div
       className="cool-timer-container"
       initial={{ opacity: 0, y: 30 }}
@@ -279,6 +328,16 @@ const WelcomeScreen = ({ onNext }) => {
   const [showAwards, setShowAwards] = useState(false);
   const [showPhotos, setShowPhotos] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  useEffect(() => {
+    const isExpired = +new Date() > +new Date(TARGET_DATE);
+    if (isExpired) {
+      setShowCelebration(true);
+      const timer = setTimeout(() => setShowCelebration(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const currentImageIndex = Math.abs(page % carouselData.length);
   const currentData = carouselData[currentImageIndex];
@@ -357,6 +416,11 @@ const WelcomeScreen = ({ onNext }) => {
       <AnimatePresence>
         {isTransitioning && <GifTransition />}
       </AnimatePresence>
+      
+      <AnimatePresence>
+        {showCelebration && <CelebrationGraphics />}
+      </AnimatePresence>
+
 
       {/* --- HERO SECTION --- */}
       <section className="hero-section">
