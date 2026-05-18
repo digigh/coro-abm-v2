@@ -717,6 +717,245 @@
   .stat-card:last-child {
     grid-column: span 2;
     padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
+}
+
+/* ============================================================
+   THEME 2026 — PREMIUM NAVY × GOLD GEOMETRIC (HK / MACAO)
+   ============================================================ */
+
+.gallery-screen.theme-2026 {
+  background: #07071e;
+  transition: background 0.6s ease;
+}
+
+.gallery-screen.theme-2026 .gallery-bg-mesh,
+.gallery-screen.theme-2026 .gallery-bg-scanlines { display: none; }
+
+/* ---- AMBIENT BG CONTAINER ---- */
+.hk-ambient-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+/* ---- RADIAL BLUE GLOW (left centre) ---- */
+.hk-blue-glow {
+  position: absolute;
+  left: -80px; top: 50%;
+  transform: translateY(-50%);
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(50, 50, 200, 0.25) 0%, transparent 70%);
+  filter: blur(60px);
+}
+
+/* ---- DOT GRID (top-right) ---- */
+.hk-dot-grid {
+  position: absolute;
+  top: 40px; right: 60px;
+  width: 80px; height: 56px;
+  background-image: radial-gradient(circle, rgba(100,100,200,0.6) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+  opacity: 0.5;
+}
+
+/* ============ UI ELEMENTS — NAVY × GOLD COLOR SCHEME ============ */
+
+/* Gallery title — crisp white with gold glow */
+.gallery-screen.theme-2026 .gallery-main-title {
+  color: #ffffff;
+  text-shadow:
+    0 0 30px rgba(212, 175, 55, 0.35),
+    0 0 60px rgba(212, 175, 55, 0.15);
+  -webkit-text-fill-color: #fff;
+}
+
+/* Back button — navy glass */
+.gallery-screen.theme-2026 .gallery-back-btn {
+  background: rgba(28, 28, 122, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: rgba(212,175,55,0.9);
+  backdrop-filter: blur(10px);
+}
+
+/* Year tabs */
+.gallery-screen.theme-2026 .year-tab-btn {
+  background: rgba(28,28,100,0.25);
+  border: 1px solid rgba(212,175,55,0.2);
+  backdrop-filter: blur(12px);
+  color: rgba(200,200,255,0.5);
+}
+.gallery-screen.theme-2026 .year-tab-btn:hover {
+  border-color: rgba(212,175,55,0.5);
+  color: rgba(212,175,55,0.8);
+  background: rgba(28,28,120,0.4);
+}
+.gallery-screen.theme-2026 .year-tab-btn.active {
+  border-color: rgba(212,175,55,0.7);
+  background: rgba(212,175,55,0.08);
+  color: #D4AF37;
+  box-shadow: 0 0 0 1px rgba(212,175,55,0.25), 0 8px 32px rgba(212,175,55,0.2), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.gallery-screen.theme-2026 .active-tab-glow {
+  background: radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.18) 0%, transparent 70%);
+  opacity: 1;
+}
+.gallery-screen.theme-2026 .year-info-panel {
+  border-left: 4px solid #D4AF37;
+  border-top: 1px solid rgba(212,175,55,0.2);
+  border-right: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(135deg, rgba(28,28,122,0.15) 0%, rgba(7,7,30,0.5) 100%);
+  backdrop-filter: blur(24px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 20px 60px rgba(0,0,0,0.7);
+}
+.gallery-screen.theme-2026 .year-theme {
+  background: linear-gradient(90deg, #fff 0%, #D4AF37 70%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 15px rgba(212,175,55,0.4));
+}
+.gallery-screen.theme-2026 .gallery-title-underline {
+  background: linear-gradient(to right, #D4AF37, rgba(80,80,200,0.4), transparent);
+  box-shadow: 0 0 8px rgba(212,175,55,0.3);
+}
+.gallery-screen.theme-2026 .stat-icon { color: #D4AF37; }
+.gallery-screen.theme-2026 .stat-label { color: rgba(212,175,55,0.7); letter-spacing: 2px; }
+
+/* Media cards */
+.gallery-screen.theme-2026 .media-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.6);
+  transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
+}
+.gallery-screen.theme-2026 .media-card:hover {
+  border-color: rgba(212,175,55,0.55);
+  box-shadow: 0 0 0 1px rgba(212,175,55,0.2), 0 24px 70px rgba(0,0,0,0.8), 0 0 40px rgba(212,175,55,0.1);
+}
+.gallery-screen.theme-2026 .media-card::before { border-radius: 20px; border: 1px solid transparent; }
+.gallery-screen.theme-2026 .media-card:hover::before { border-color: rgba(212,175,55,0.3); }
+.gallery-screen.theme-2026 .media-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 35%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%);
+  pointer-events: none; z-index: 2;
+  border-radius: 20px 20px 0 0;
+}
+.gallery-screen.theme-2026 .media-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.15) 55%, transparent 100%);
+}
+.gallery-screen.theme-2026 .expand-icon { color: #D4AF37; }
+.gallery-screen.theme-2026 .page-num-btn.active {
+  background: linear-gradient(135deg, #D4AF37, #f8b31d);
+  color: #07071e; border-color: #D4AF37;
+  box-shadow: 0 0 20px rgba(212,175,55,0.6), 0 0 6px rgba(212,175,55,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  font-weight: 900;
+}
+.gallery-screen.theme-2026 .page-nav-btn:hover:not(:disabled) {
+  background: rgba(212,175,55,0.08);
+  border-color: rgba(212,175,55,0.5); color: #D4AF37;
+  box-shadow: 0 0 15px rgba(212,175,55,0.15);
+}
+.gallery-screen.theme-2026 .gallery-back-btn:hover {
+  background: rgba(212,175,55,0.08);
+  border-color: #D4AF37; color: #D4AF37;
+  box-shadow: 0 0 20px rgba(212,175,55,0.15);
+  transform: translateX(-5px);
+}
+.gallery-screen.theme-2026 .gallery-footer {
+  border-top: 1px solid rgba(212,175,55,0.15);
+}
+.gallery-screen.theme-2026 .gallery-footer p {
+  color: rgba(212,175,55,0.3); letter-spacing: 5px;
+}
+
+/* --- GALLERY CAROUSEL --- */
+.gallery-carousel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-carousel-close-btn {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10001;
+  transition: transform 0.3s;
+}
+
+.gallery-carousel-close-btn:hover {
+  transform: scale(1.2);
+  color: #D4AF37;
+}
+
+.gallery-carousel-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  padding: 20px 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s;
+  z-index: 10001;
+}
+
+.gallery-carousel-nav-btn:hover {
+  background: rgba(212, 175, 55, 0.4);
+  color: #D4AF37;
+}
+
+.gallery-carousel-nav-btn.prev {
+  left: 20px;
+}
+
+.gallery-carousel-nav-btn.next {
+  right: 20px;
+}
+
+.gallery-carousel-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gallery-carousel-content img {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.gallery-carousel-info {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.carousel-info h3 {
+  margin: 0;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: #fff;
 }
