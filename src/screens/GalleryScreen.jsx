@@ -1212,7 +1212,16 @@ const GalleryScreen = ({ onBack }) => {
   const [selectedSubCategory, setSelectedSubCategory] = useState('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const [carouselIndex, setCarouselIndex] = useState(null);
+  const [brokenImages, setBrokenImages] = useState(new Set());
   const itemsPerPage = 12;
+
+  const handleImageError = (id) => {
+    setBrokenImages((prev) => {
+      const updated = new Set(prev);
+      updated.add(id);
+      return updated;
+    });
+  };
 
   // Initialize and reshuffle 2026 media on entry
   const [shuffled2026Media, setShuffled2026Media] = useState(() => {
@@ -1227,12 +1236,13 @@ const GalleryScreen = ({ onBack }) => {
 
   const currentYearData = GALLERY_DATA[selectedYear];
   
-  const filteredMedia = selectedYear === 2026
+  const filteredMedia = (selectedYear === 2026
     ? shuffled2026Media
     : currentYearData.media.filter(item => {
         const matchesSubCat = selectedYear !== 2023 || selectedSubCategory === 'ALL' || item.category === selectedSubCategory;
         return matchesSubCat;
-      });
+      })
+  ).filter(item => !brokenImages.has(item.id));
 
   const totalPages = Math.ceil(filteredMedia.length / itemsPerPage);
   const displayedMedia = filteredMedia.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -1375,6 +1385,7 @@ const GalleryScreen = ({ onBack }) => {
                       alt={item.title} 
                       className="media-img" 
                       loading="lazy"
+                      onError={() => handleImageError(item.id)}
                     />
                     <div className="media-overlay">
                       {item.type === 'video' && (
